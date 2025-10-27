@@ -1,0 +1,186 @@
+/* ============ Login Page (AquaTicket) ============ */
+:root {
+  --login-max-w: 480px;
+  --radius-xl: 16px;
+  --shadow-lg: 0 14px 40px rgba(17, 17, 17, 0.08);
+  --line: #e9e9ee;
+
+  --text-strong: #111;
+  --text: #333;
+  --muted: #8b8b94;
+
+  --aqua: #3b5bfd;   /* Aqua(파랑) */
+  --ticket: #111;    /* Ticket(검정) */
+
+  --kakao: #fee500;  /* Kakao Yellow */
+  --green: #00c73c;  /* 로컬 아이콘 초록 */
+}
+
+/* 페이지 컨테이너 */
+.login-page {
+  min-height: calc(100vh - var(--header-h, 72px));
+  display: grid;
+  place-items: start center;
+  padding: max(5vh, 40px) 16px;
+  background: #fff;
+}
+
+/* 카드 */
+.login-card {
+  width: 100%;
+  max-width: var(--login-max-w);
+  margin-top: 4vh;
+  background: #fff;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: 40px 32px;
+  text-align: center;
+}
+
+/* 브랜드 (Aqua 파랑 + Ticket 검정) */
+.brand {
+  margin: 4px 0 26px;
+  line-height: 1.1;
+  letter-spacing: .2px;
+  font-weight: 800;
+  font-size: 40px;
+}
+.brand .brand-aqua { color: var(--aqua); }
+.brand .brand-ticket { color: var(--ticket); }
+
+/* ========== 카카오 공식 버튼 ========== */
+.kakao-btn {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+.kakao-btn img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  transition: transform .04s ease, box-shadow .2s ease;
+}
+.kakao-btn:hover img { transform: translateY(-1px); }
+.kakao-btn:active img { transform: translateY(0); }
+
+/* ========== 이메일 로그인 토글 버튼 ========== */
+.email-toggle {
+  width: 100%;
+  height: 60px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #fff;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px;
+  justify-content: space-between;
+  text-align: left;
+  margin-bottom: 8px;
+  cursor: pointer;
+
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--text-strong);
+}
+.email-toggle .dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #a7f3b5, #00c73c);
+  flex: 0 0 18px;
+}
+.email-toggle .label { flex: 1; }
+.email-toggle .chev {
+  font-size: 18px;
+  transition: transform .25s ease;
+  opacity: .75;
+}
+.email-toggle.open .chev { transform: rotate(180deg); }
+
+/* ========== 접히는 패널(transition) ========== */
+.email-panel {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height .28s ease, opacity .28s ease, margin-top .28s ease;
+}
+.email-panel.open {
+  max-height: 360px; /* 폼 높이보다 넉넉하게 */
+  opacity: 1;
+  margin-top: 12px;
+}
+
+/* ========== 이메일 로그인 폼 ========== */
+.email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+.form-row { display: flex; flex-direction: column; gap: 6px; }
+.form-row label {
+  font-size: 13px;
+  color: var(--muted);
+}
+.email-form input {
+  width: 100%;
+  height: 46px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  padding: 0 14px;
+  font-size: 15px;
+  color: var(--text);
+}
+.email-form input:focus {
+  outline: none;
+  border-color: var(--aqua);
+  box-shadow: 0 0 0 3px rgba(59, 91, 253, .14);
+}
+
+.error { margin: 4px 2px 0; color:#d93025; font-size:13px; }
+
+/* 로그인 제출 버튼 */
+.submit-btn {
+  width: 100%;
+  height: 48px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--aqua);
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  transition: filter .2s ease;
+  margin-top: 2px;
+}
+.submit-btn:hover { filter: brightness(.98); }
+.submit-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+/* 하단 링크 */
+.links {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+.link-btn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 8px;
+}
+.link-btn:hover { color: var(--text); }
+
+/* 반응형 */
+@media (max-width: 520px) {
+  .login-card { padding: 32px 22px; }
+  .brand { font-size: 34px; }
+  .email-toggle { height: 58px; font-size: 17px; }
+}

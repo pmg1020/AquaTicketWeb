@@ -1,0 +1,194 @@
+/* Header.css */
+:root{
+  --hdr-h: 84px;
+  --hdr-h-collapsed: 64px;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+
+/* 스크롤 시 축소 효과 */
+body.compact-header .site-header {
+  box-shadow: 0 4px 14px rgba(0,0,0,.06);
+}
+
+.hd-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 12px 16px;
+}
+
+.hd-primary { gap: 16px; }
+.logo { font-size: 24px; font-weight: 800; color: #111; text-decoration: none; cursor: pointer; }
+.logo-aqua { color: #2563eb; }
+
+.search { flex: 1 1 auto; display: flex; border: 1px solid #e5e7eb; border-radius: 999px; overflow: hidden; }
+.search input { flex: 1; border: 0; outline: 0; padding: 10px 14px; font-size: 15px; }
+.search button { border: 0; background: #e5f0ff; padding: 8px 14px; cursor: pointer; }
+
+.login-btn { border: 1px solid #111; background: #fff; border-radius: 10px; padding: 8px 14px; cursor: pointer; }
+
+/* 서브 네비 */
+.hd-subnav {
+  gap: 20px;
+  padding: 8px 16px;
+  border-top: 1px solid #f5f5f5;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 15px;
+  font-weight: 500;
+}
+.hd-subnav a { color: #374151; text-decoration: none; white-space: nowrap; padding: 6px 0; }
+.hd-subnav a.active { color: #2563eb; position: relative; }
+.hd-subnav a.active::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -6px;
+  height: 2px;
+  background: #2563eb;
+  border-radius: 2px;
+}
+
+/* 본문 컨테이너 */
+.page {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 16px;
+  padding-top: calc(var(--header-full-h) + 12px); /* 헤더와 본문 사이 적당히 */
+}
+
+/* 상세페이지 달력 sticky */
+.detail-calendar,
+.side .calendarCard {
+  position: sticky;
+  top: calc(var(--header-collapsed-h) + 12px); /* 헤더 밑에 고정 */
+  align-self: flex-start;
+}
+
+/* ===== PATCH: header gap + detail sticky (append only) ===== */
+
+/* 헤더 높이 변수(기본값). 필요 시 JS로 실측해 덮어씁니다. */
+:root{
+  --hdr-h: 84px;
+  --hdr-h-collapsed: 64px;
+}
+
+/* 혹시 남아있을 spacer 제거 */
+.header-spacer{
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 헤더 아래 본문 컨테이너: 상단만 살짝 띄움 */
+.page.with-header{
+  padding-top: 16px !important;
+  margin-top: 0 !important;
+  overflow: visible !important; /* sticky 방해 금지 */
+}
+
+/* 첫 제목이 헤더에 딱 붙지 않도록 약간만 띄움 */
+.page.with-header > .heroTitle{ margin-top: 8px; }
+
+/* ===== 상세: sticky 달력 보장 ===== */
+
+/* hero 같은 3열 컨테이너에 병행 적용 */
+.detail-layout{
+  overflow: visible !important;
+  align-items: start !important;   /* sticky가 위로 붙도록 */
+}
+
+/* 사이드 래퍼 */
+.detail-side{
+  position: relative;
+  overflow: visible !important;    /* sticky 방해 금지 */
+}
+
+/* 실제 카드에만 sticky */
+.detail-side .sticky-card{
+  position: sticky;
+  top: calc(var(--hdr-h-collapsed) + 12px); /* 헤더 축소 높이 만큼 띄움 */
+  z-index: 2;
+}
+
+/* 앵커 스크롤 시 헤더에 가리지 않도록(선택) */
+:target{ scroll-margin-top: calc(var(--hdr-h-collapsed) + 8px); }
+
+
+/* user menu */
+.userbox { position: relative; }
+.userchip {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 12px; border-radius: 18px;
+  border: 1px solid #e5e7eb; background: #fff; cursor: pointer;
+}
+.userchip .avatar {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #eef2ff; color: #3730a3; display:flex;align-items:center;justify-content:center;
+  font-weight: 700; font-size: 12px;
+}
+.userchip .uname { font-size: 14px; color:#111; }
+.userchip .caret { font-size: 10px; color:#6b7280; }
+
+.usermenu {
+  position: absolute; right: 0; top: calc(100% + 8px);
+  width: 220px; background: #fff; border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08); border-radius: 12px;
+  overflow: hidden; z-index: 20;
+}
+.um-head { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; }
+.um-name { font-weight: 700; color:#111; }
+.um-email { color:#6b7280; font-size: 12px; margin-top: 2px; }
+.um-item {
+  width: 100%; text-align: left; padding: 10px 14px; background:#fff; border:0; cursor:pointer;
+}
+.um-item:hover { background:#f8fafc; }
+
+
+.user-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--line, #eaeaea);
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.user-chip:hover { background: #f9fafb; }
+
+.user-chip .avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #eef2ff; /* 연한 파랑 */
+  color: #3b5bfd;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.user-chip .name {
+  font-size: 14px;
+  color: #111;
+}

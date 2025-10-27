@@ -1,0 +1,86 @@
+:root{
+  --page-max: 1160px;
+  --gap: 24px;
+  --poster-w: 240px;
+}
+
+/* Page */
+.page-detail-wrapper{
+  max-width: var(--page-max);
+  margin: 0 auto !important;
+  padding: 0 16px 40px;
+}
+
+/* Header */
+.melon-detail-header {
+  display: flex;
+  gap: var(--gap);
+  padding-top: 28px;
+  margin-bottom: 28px;
+}
+.melon-poster-area { width: var(--poster-w); height: 330px; flex-shrink: 0; }
+.melon-poster-area img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block; }
+.melon-info-area { flex: 1; }
+.melon-title { font-size: 28px; font-weight: 800; margin: 0 0 12px; border-bottom: 1px solid #f2f2f2; padding-bottom: 14px; }
+.melon-infoList { list-style: none; padding: 0; margin: 0; }
+.melon-infoList li { display: flex; padding: 6px 0; border-bottom: 1px solid #fafafa; }
+.melon-label { width: 110px; font-weight: 700; color: #777; }
+.melon-value { color: #111; }
+
+/* New Single Box Layout for Date/Time Selection */
+.selection-box {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 28px;
+}
+
+.triple-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.sectionTitle{ font-weight: 800; margin: 6px 0 12px; }
+
+/* Calendar Styles (from react-calendar overrides) */
+.calendar-pane .react-calendar {
+  border: none;
+}
+
+/* Time slots */
+.time-slots{ display:flex; flex-wrap:wrap; gap:10px; }
+.time-slot-btn{
+  padding:10px 14px; border-radius:999px; border:1px solid #e5e7eb; background:#fff; cursor:pointer; font-weight:600;
+}
+.time-slot-btn:hover{ background:#f8fafc; }
+.time-slot-btn.active{ background:#3b82f6; border-color:#3b82f6; color:#fff; }
+
+/* Price panel */
+.price-panel{ border-top:1px solid #f3f3f3; padding-top:16px; }
+.price-title{ font-size:14px; color:#666; margin:4px 0 8px; }
+.price-rows{ display:flex; flex-direction:column; gap:6px; }
+.price-row{ display:flex; justify-content:space-between; font-size:15px; }
+.price-row .grade{ color:#555; }
+.price-row .amount{ font-weight:700; }
+.price-row.muted{ color:#aaa; }
+
+/* Book button */
+.melon-book-btn{ padding:12px 22px; border:none; border-radius:8px; background:#5955f3; color:#fff; font-weight:800; cursor:pointer; }
+.melon-book-btn.wide{ width:100%; margin-top:6px; padding-top: 14px; padding-bottom: 14px; font-size: 16px; }
+.melon-book-btn:disabled{ opacity:.5; cursor:not-allowed; }
+
+/* Intro */
+.intro{ margin-top:36px; }
+.introTitle{ font-size:20px; font-weight:800; margin-bottom:12px; }
+.introGrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
+.introImg{ width:100%; border-radius:12px; display:block; }
+
+/* Responsive */
+@media (max-width: 980px){
+  .triple-layout {
+    grid-template-columns: 1fr; /* Stack columns on smaller screens */
+  }
+}

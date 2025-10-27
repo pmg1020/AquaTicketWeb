@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+/* index.css (혹은 전역 CSS 파일)에 추가 */
+
+/* ✅ [최종 수정] #root가 Sticky를 방해하지 않도록 설정 */
+#root {
+  width: 100%;
+  min-height: 100vh; /* 전체 화면 높이 이상을 차지하도록 설정 */
+  /* margin, padding, max-width는 App.css에 정의되어 있으므로 여기서는 overflow만 조절합니다. */
+  overflow: visible !important; /* Sticky 무력화 방지 */
+}
+
+/* index.css (또는 전역 CSS 파일)에 추가 */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: auto; /* body는 스크롤을 담당해야 함 */
+}

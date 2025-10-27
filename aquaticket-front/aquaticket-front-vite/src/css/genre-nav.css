@@ -1,0 +1,38 @@
+/* 장르 네비(두 번째 줄) */
+.genre-nav {
+  position: sticky;      /* 스크롤해도 상단에 고정되게 하려면 주석 제거 */
+  top: 60px;             /* header 높이에 맞춰 조정 */
+  z-index: 40;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+.genre-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+}
+.genre-link {
+  text-decoration: none;
+  color: #333;
+  padding: 8px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: color .15s ease;
+}
+.genre-link:hover {
+  color: #4f8cff;
+}
+.genre-link.is-active {
+  color: #4f8cff;
+  font-weight: 700;
+}
+
+/* 컨텐츠 래퍼 */
+.page-container {
+  max-width: 1200px;
+  margin: 16px auto 80px;
+  padding: 0 20px 24px;
+}
