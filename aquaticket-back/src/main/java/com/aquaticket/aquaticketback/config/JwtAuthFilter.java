@@ -32,9 +32,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7).trim();
 
-            if (tokenProvider.validateToken(token)) {
-                String email = tokenProvider.getSubject(token);
-                String role  = tokenProvider.getRole(token);
+            try {
+                io.jsonwebtoken.Jws<io.jsonwebtoken.Claims> claims = tokenProvider.validateToken(token);
+                String email = claims.getBody().getSubject();
+                String role  = claims.getBody().get("role", String.class);
 
                 List<GrantedAuthority> auths = List.of(new SimpleGrantedAuthority("ROLE_" + role));
                 UsernamePasswordAuthenticationToken auth =
@@ -42,6 +43,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
+            } catch (Exception e) {
+                req.setAttribute("jwtError", e.getMessage());
             }
         }
 

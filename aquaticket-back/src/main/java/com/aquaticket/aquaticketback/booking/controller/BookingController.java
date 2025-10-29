@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -23,6 +24,11 @@ public class BookingController {
     public BookingController(BookingService bookingService) {
         this.bookingService = bookingService;
 
+    }
+
+    @GetMapping("/showtimes/{showtimeId}/availability")
+    public ResponseEntity<List<com.aquaticket.aquaticketback.booking.dto.SeatAvailabilityDto>> getSeatAvailability(@PathVariable Long showtimeId) {
+        return ResponseEntity.ok(bookingService.getSeatAvailability(showtimeId));
     }
 
     @GetMapping("/me")

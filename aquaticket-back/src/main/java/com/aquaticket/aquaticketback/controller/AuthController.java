@@ -61,16 +61,11 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> me(@RequestHeader(value = "Authorization", required = false) String authHeader) {
-        // 프론트 디버그용: 토큰 없이 들어오면 비로그인 응답
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+    public ResponseEntity<?> me(org.springframework.security.core.Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof String)) {
             return ResponseEntity.ok(Map.of("authenticated", false));
         }
-        String token = authHeader.substring(7);
-        if (!jwt.validateToken(token)) {
-            return ResponseEntity.status(401).body("토큰이 유효하지 않습니다.");
-        }
-        String email = jwt.getSubject(token);
+        String email = (String) authentication.getPrincipal();
         User u = users.findByEmail(email).orElse(null);
         return ResponseEntity.ok(Map.of(
                 "authenticated", true,

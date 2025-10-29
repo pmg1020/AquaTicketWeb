@@ -87,7 +87,7 @@ export default function App() {
         />
 
         <Route
-          path="/book/:showtimeId"
+          path="/book"
           element={
             <RequireAuth>
               <BookPage />

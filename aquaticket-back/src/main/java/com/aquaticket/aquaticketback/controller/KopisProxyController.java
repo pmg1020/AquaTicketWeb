@@ -35,7 +35,7 @@ public class KopisProxyController {
             @RequestParam(defaultValue = "1") String cpage,
             @RequestParam(defaultValue = "12") String rows
     ) {
-        String url = UriComponentsBuilder.fromHttpUrl(KOPIS_API_BASE_URL + "/pblprfr")
+        String url = UriComponentsBuilder.fromUriString(KOPIS_API_BASE_URL + "/pblprfr")
                 .queryParam("service", kopisServiceKey)
                 .queryParam("stdate", stdate)
                 .queryParam("eddate", eddate)
@@ -64,7 +64,7 @@ public class KopisProxyController {
        ========================= */
     @GetMapping(value = "/pblprfr/{mt20id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getPerformanceDetail(@PathVariable String mt20id) {
-        String url = UriComponentsBuilder.fromHttpUrl(KOPIS_API_BASE_URL + "/pblprfr/" + mt20id)
+        String url = UriComponentsBuilder.fromUriString(KOPIS_API_BASE_URL + "/pblprfr/" + mt20id)
                 .queryParam("service", kopisServiceKey)
                 .build().toUriString();
 
@@ -92,7 +92,7 @@ public class KopisProxyController {
     @GetMapping(value = "/prfprice/{mt20id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PriceLineDto>> getPerformancePrices(@PathVariable String mt20id) {
         String url = UriComponentsBuilder
-                .fromHttpUrl(KOPIS_API_BASE_URL + "/pblprfr/" + mt20id)
+                .fromUriString(KOPIS_API_BASE_URL + "/pblprfr/" + mt20id)
                 .queryParam("service", kopisServiceKey)
                 .build().toUriString();
 

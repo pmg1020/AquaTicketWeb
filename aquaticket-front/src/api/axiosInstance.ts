@@ -2,14 +2,14 @@
 import axios, { AxiosError, AxiosHeaders } from "axios";
 import type { InternalAxiosRequestConfig, AxiosResponse } from "axios";
 
-const TOKEN_KEY = "accessToken";
+export const TOKEN_KEY = "accessToken";
 const LOGOUT_BROADCAST_KEY = "auth:loggedOut";
 
 // 디폴트: 개발프록시(/api → 8080) 쓰면 "/" 권장.
 // 환경변수로 직접 찍고 있다면 그대로 둬도 무방.
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? "/",
-  withCredentials: false,
+  withCredentials: true,
 });
 
 // 401 처리 플래그 확장
@@ -66,6 +66,14 @@ api.interceptors.response.use(
       const isInNoRedirectList = NO_REDIRECT_401.some((re) => re.test(url));
       const shouldRedirect =
         AUTO_REDIRECT_401 && !cfg.skip401Redirect && !isInNoRedirectList;
+
+      console.log("401 Interceptor Debug:", {
+        url,
+        isInNoRedirectList,
+        shouldRedirect,
+        AUTO_REDIRECT_401,
+        skip401Redirect: cfg.skip401Redirect,
+      });
 
       if (shouldRedirect) {
         // 1) 토큰 제거

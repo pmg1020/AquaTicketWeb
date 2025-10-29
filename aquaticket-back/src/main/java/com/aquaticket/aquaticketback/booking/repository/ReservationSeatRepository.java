@@ -1,22 +1,14 @@
 package com.aquaticket.aquaticketback.booking.repository;
 
-import com.aquaticket.aquaticketback.booking.domain.Reservation;
 import com.aquaticket.aquaticketback.booking.domain.ReservationSeat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import java.util.Set;
 
 public interface ReservationSeatRepository extends JpaRepository<ReservationSeat, Long> {
 
-    @Query("""
-        SELECT rs.seat.id
-        FROM ReservationSeat rs
-        WHERE rs.reservation.show.id = :showId
-          AND rs.reservation.status = 'CONFIRMED'
-    """)
-    List<Long> findConfirmedSeatIdsByShow(Long showId);
-
-    /** 특정 예약에 속한 좌석 라인 전체 조회 (confirm 단계에서 중복/검증에 사용) */
-    List<ReservationSeat> findByReservation(Reservation reservation);
+    @Query(value = "SELECT rs.seat_id FROM reservation_seats rs JOIN reservations r ON rs.reservation_id = r.id WHERE r.showtime_id = :showtimeId AND r.status = 'CONFIRMED'", nativeQuery = true)
+    Set<Long> findSeatIdsByShowtime(@Param("showtimeId") Long showtimeId);
 }

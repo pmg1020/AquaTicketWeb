@@ -1,0 +1,2 @@
+PerformanceDetail: Sending token to BookPage eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZW00MDcxQG5hdmVyLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzYxNTQ1MTM4LCJleHAiOjE3NjE1NDg3Mzh9.3J4_jWpxK51xinUQ0gFusOYYiluSiFHL_T_vZ55911g
+Navigated to http://localhost:5173/performances/PF241378

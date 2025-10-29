@@ -42,7 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers("/oauth2/**", "/login/**", "/login/oauth2/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/kopis/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/booking/**").permitAll()
+                        .requestMatchers("/api/booking/**").authenticated()
                         .anyRequest().authenticated()
                 )
 
@@ -51,7 +51,9 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint((req, res, e) -> {
                     res.setStatus(401);
                     res.setContentType("application/json;charset=UTF-8");
-                    res.getWriter().write("{\"error\":\"Unauthorized\"}");
+                    Object jwtError = req.getAttribute("jwtError");
+                    String errorMessage = (jwtError != null) ? jwtError.toString().replace("\"", "'") : "Unauthorized";
+                    res.getWriter().write("{\"error\":\"" + errorMessage + "\"}");
                 }))
 
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

@@ -2,7 +2,7 @@
 import api from "@/api/axiosInstance";
 
 /** 좌석 상태 */
-export type SeatStatus = "AVAILABLE" | "HELD" | "BOOKED";
+export type SeatStatus = "AVAILABLE" | "LOCKED" | "TAKEN";
 
 /** 좌석 가용성 DTO (백엔드 SeatAvailabilityDto와 매핑) */
 export interface SeatAvailability {

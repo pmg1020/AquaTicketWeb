@@ -23,7 +23,7 @@ content-length
 content-type
 application/json;charset=UTF-8
 date
-Mon, 27 Oct 2025 01:26:50 GMT
+Mon, 27 Oct 2025 01:37:18 GMT
 expires
 0
 pragma
@@ -43,7 +43,7 @@ gzip, deflate, br, zstd
 accept-language
 ko,en-US;q=0.9,en;q=0.8
 authorization
-Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZW00MDcxQG5hdmVyLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzYxNTI4Mzk2LCJleHAiOjE3NjE1MzE5OTZ9.uWZMrByMLc1CeOS-BvJgm-drBRCzmRfkxp6dMXf1-MU
+Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZW00MDcxQG5hdmVyLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzYxNTI5MDI0LCJleHAiOjE3NjE1MzI2MjR9.xfD99C_evC0mrxo534Tmwmxq0S-sC-Y11jJKfb6Py7U
 connection
 keep-alive
 content-length
@@ -51,7 +51,7 @@ content-length
 content-type
 application/json
 cookie
-Idea-b459bfb0=52a3ef2b-988d-4634-a758-3301aac96ba8; JSESSIONID=7D5A509617D377674688A871A14BF1E4
+Idea-b459bfb0=52a3ef2b-988d-4634-a758-3301aac96ba8; JSESSIONID=AA7DD791537D854FE061B007702FC17E
 host
 localhost:5173
 origin
@@ -72,5 +72,3 @@ sec-fetch-site
 same-origin
 user-agent
 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36
-
-보안문자 입력 후 위 오류가 발생했어

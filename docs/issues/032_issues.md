@@ -23,7 +23,7 @@ content-length
 content-type
 application/json;charset=UTF-8
 date
-Mon, 27 Oct 2025 01:26:50 GMT
+Mon, 27 Oct 2025 01:31:41 GMT
 expires
 0
 pragma
@@ -72,5 +72,3 @@ sec-fetch-site
 same-origin
 user-agent
 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36
-
-보안문자 입력 후 위 오류가 발생했어

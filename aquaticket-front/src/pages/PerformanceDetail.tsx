@@ -1,10 +1,10 @@
 // src/pages/PerformanceDetail.tsx
 import { useEffect, useMemo, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import toast from "react-hot-toast";
-import { AxiosError } from "axios";
+
 
 import {
   fetchPerformanceDetail,
@@ -14,16 +14,16 @@ import {
 } from "@/api/kopis";
 
 
-import { ensureShowtime } from "@/api/showtime";
+
 
 
 import "@/css/performance-detail.css";
+import { TOKEN_KEY } from "@/api/axiosInstance"; // TOKEN_KEY import 추가
 
 type CalValue = Date | null;
 
 export default function PerformanceDetail() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
 
   const [detail, setDetail] = useState<KopisDetailRaw | null>(null);
   const [prices, setPrices] = useState<KopisPriceItem[]>([]);
@@ -55,40 +55,21 @@ export default function PerformanceDetail() {
   }, [id]);
 
   useEffect(() => {
-    const handleCaptchaMessage = async (event: MessageEvent) => {
+    const handleBookingCompleted = (event: MessageEvent) => {
       if (event.origin !== window.location.origin) {
         return;
       }
-      if (event.data.type === 'captcha-verified') {
-        const { kopisId, day, time } = event.data.payload;
-
-        if (!kopisId || !day || !time) {
-            toast.error("공연 정보가 올바르지 않습니다.");
-            return;
-        }
-
-        const startAt = `${day}T${time}:00`;
-
-        try {
-            const showtimeId = await ensureShowtime(kopisId, startAt);
-            const dateObj = new Date(day);
-            const dateStr = dateObj.toLocaleDateString();
-            navigate(`/book/${showtimeId}?date=${encodeURIComponent(dateStr)}&time=${encodeURIComponent(time)}`);
-        } catch (err) {
-            if (err instanceof AxiosError && err.response?.status === 401) {
-                toast.error("로그인이 필요합니다. 다시 로그인해주세요.");
-            } else {
-                toast.error("예매 진입에 실패했습니다. 다시 시도해주세요.");
-            }
-        }
+      if (event.data.type === 'booking-completed') {
+        // 예매 완료 메시지를 받으면 부모창 새로고침
+        window.location.reload();
       }
     };
 
-    window.addEventListener('message', handleCaptchaMessage);
+    window.addEventListener('message', handleBookingCompleted);
     return () => {
-      window.removeEventListener('message', handleCaptchaMessage);
+      window.removeEventListener('message', handleBookingCompleted);
     };
-  }, [id, selectedDate, selectedTime, navigate]);
+  }, []); // 의존성 배열은 비워둡니다.
 
   // ⏱️ 회차(시간) 목록: KOPIS의 dtguidance(예: "화~금 19시 / 토 14시, 19시 ...")를 파싱하기 전
   //   데모용으로 간단히 두 개 시간 슬롯을 노출. 실제로는 날짜에 따라 스케줄 생성/표시.
@@ -142,9 +123,9 @@ export default function PerformanceDetail() {
 
   console.log({ detail, detailPoster: detail?.poster });
 
-  const onClickBook = () => {
-    if (!selectedDate || !selectedTime) {
-      toast.error("날짜와 회차를 먼저 선택해주세요.");
+  const onClickBook = async () => {
+    if (!id || !selectedDate || !selectedTime) {
+      toast.error("공연 정보가 올바르지 않습니다. 날짜와 회차를 먼저 선택해주세요.");
       return;
     }
     const y = selectedDate.getFullYear();
@@ -152,8 +133,33 @@ export default function PerformanceDetail() {
     const d = String(selectedDate.getDate()).padStart(2, "0");
     const day = `${y}-${m}-${d}`;
 
-    const captchaUrl = `/book/captcha?k=${id}&d=${day}&t=${selectedTime}`;
-    window.open(captchaUrl, 'captcha', 'width=400,height=600');
+    // bookPageUrl 재정의
+    const bookPageUrl = `/book?k=${id}&d=${day}&t=${selectedTime}`; // showtimeId 대신 kopisId, day, time 전달
+
+    const bookWindow = window.open(bookPageUrl, 'bookPage', 'width=800,height=600');
+
+    if (!bookWindow || bookWindow.closed) {
+        toast.error('팝업 차단이 설정되어 있습니다. 팝업 허용 후 다시 시도해주세요.');
+        return; // 팝업이 차단되었으므로 이후 로직 실행 중단
+    }
+
+    if (bookWindow) {
+        const captchaUrl = `/book/captcha?k=${id}&d=${day}&t=${selectedTime}`;
+        const captchaPopup = window.open(captchaUrl, 'captcha', 'width=400,height=600');
+
+        // BookPage로 토큰 전달 (팝업이 완전히 로드된 후에 보내야 합니다.)
+        // 간단하게 setTimeout을 사용하지만, 실제로는 팝업 로드 이벤트를 기다리는 것이 더 안정적입니다.
+        // BookPage로 토큰 전달 (팝업 로드 완료 후)
+        bookWindow.addEventListener('load', () => {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (token) {
+                console.log("PerformanceDetail: Sending token to BookPage after load", token);
+                bookWindow.postMessage({ type: 'auth-token', token }, window.location.origin);
+            } else {
+                console.log("PerformanceDetail: No token found to send to BookPage after load");
+            }
+        });
+    }
   };
 
   return (

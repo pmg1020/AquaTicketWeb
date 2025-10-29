@@ -43,13 +43,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public boolean validateToken(String token) {
+    public Jws<Claims> validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
         } catch (JwtException | IllegalArgumentException e) {
             System.out.println("[JWT] Invalid token: " + e.getClass().getSimpleName() + " - " + e.getMessage());
-            return false;
+            throw e;
         }
     }
 

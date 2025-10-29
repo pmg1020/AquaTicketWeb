@@ -6,21 +6,26 @@ import { useEffect, useRef } from "react";
 export default function CaptchaPopup() {
   const widgetRef = useRef<HTMLElement>(null);
 
+  console.log("CaptchaPopup: Component rendered."); // 디버깅 코드 추가
+  console.log("CaptchaPopup: window.opener is", window.opener); // 디버깅 코드 추가
+
   useEffect(() => {
     const handleVerified = (ev: CustomEvent<{ payload: { kopisId: string, day: string, time: string } }>) => {
+      console.log("CaptchaPopup: Verified event received."); // 디버깅 코드 추가
       const { payload } = ev.detail;
       // Send payload to parent window
       if (window.opener) {
+        console.log("CaptchaPopup: Sending message to opener", payload); // 디버깅 코드 추가
         window.opener.postMessage({ type: "captcha-verified", payload }, window.location.origin);
         window.close();
       }
     };
 
     const widget = widgetRef.current;
-    widget?.addEventListener("verified", handleVerified);
+    widget?.addEventListener("verified", handleVerified as EventListener);
 
     return () => {
-      widget?.removeEventListener("verified", handleVerified);
+      widget?.removeEventListener("verified", handleVerified as EventListener);
     };
   }, []);
 
