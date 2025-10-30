@@ -152,11 +152,7 @@ export default function BookPage() {
     }));
   }, [seats]);
 
-  const visibleSeats = useMemo(() => {
-    const filteredSeats = seats.filter((s) => (zone ? s.zone === zone : true));
-    console.log("BookPage: visibleSeats updated. Count:", filteredSeats.length, "Data:", filteredSeats); // 디버깅 코드 추가
-    return filteredSeats;
-  }, [seats, zone]);
+
 
   const total = useMemo(
     () =>

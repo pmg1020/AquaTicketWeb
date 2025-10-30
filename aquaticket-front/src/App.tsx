@@ -12,7 +12,8 @@ import LoginCallback from "@/pages/LoginCallback"; // ✅ 추가
 import RegisterPage from "@/pages/RegisterPage"; // ✅ 추가
 import { Toaster } from "react-hot-toast";
 import BookPage from "@/pages/BookPage";
-import BookGate from "@/pages/BookGate";
+
+import SeatSelection from "@/pages/SeatSelection";
 
 
 const TOKEN_KEY = "accessToken";
@@ -68,11 +69,12 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/login/callback" element={<LoginCallback />} /> {/* ✅ 추가 */}
         <Route path="/register" element={<RegisterPage />} /> {/* ✅ 추가 */}
+
         <Route
-          path="/book/captcha"
+          path="/book/select-seats"
           element={
             <RequireAuth>
-              <BookGate />
+              <SeatSelection />
             </RequireAuth>
           }
         />
