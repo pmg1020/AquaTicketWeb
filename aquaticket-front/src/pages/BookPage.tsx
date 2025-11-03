@@ -141,15 +141,18 @@ export default function BookPage() {
 
   // 구역 묶기
   const groups: ZoneGroup[] = useMemo(() => {
+    console.log("BookPage: Memo for groups is running. Seats:", seats); // 디버깅 코드 추가
     const map = new Map<string, SeatAvailability[]>();
     for (const s of seats) {
       if (!map.has(s.zone)) map.set(s.zone, []);
       map.get(s.zone)!.push(s);
     }
-    return Array.from(map.entries()).map(([zone, seats]) => ({
+    const result = Array.from(map.entries()).map(([zone, seats]) => ({
       zone,
       seats,
     }));
+    console.log("BookPage: Grouped seats created:", result); // 디버깅 코드 추가
+    return result;
   }, [seats]);
 
 

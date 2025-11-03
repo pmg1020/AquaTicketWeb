@@ -1,0 +1,1 @@
+Uncaught SyntaxError: The requested module '/src/data/seatData.ts' does not provide an export named 'Seat' (at SeatMap.tsx:2:10)
