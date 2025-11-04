@@ -1,40 +1,64 @@
-# IDE
+# ========================================
+# IDE & Editor
+# ========================================
 .idea/
 *.iml
 .vscode/*
 !.vscode/settings.json
 *.swp
 *~
+*.code-workspace
 
-# Gradle
-.gradle/
-build/
-out/
-libs/
-/gradle/wrapper/gradle-wrapper.jar
+# ========================================
+# Gradle / Spring Boot (백엔드)
+# ========================================
+aquaticket-back/.gradle/
+aquaticket-back/build/
+aquaticket-back/out/
+aquaticket-back/libs/
+aquaticket-back/target/
+aquaticket-back/gradle/wrapper/gradle-wrapper.jar
 
-# Node
-node_modules/
-dist/
-npm-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+# ========================================
+# Node.js / Vite (프론트엔드)
+# ========================================
+aquaticket-front/node_modules/
+aquaticket-front/dist/
+aquaticket-front/.vite/
+aquaticket-front/.eslintcache
+aquaticket-front/npm-debug.log*
+aquaticket-front/yarn-error.log*
+aquaticket-front/pnpm-debug.log*
 
-# Environment variables
+# ========================================
+# Environment Variables
+# (루트 + front/back 각각의 .env 파일 무시)
+# ========================================
 .env
-.env*
-!.env.example
+.env.*
+!*.env.example
+aquaticket-front/.env
+aquaticket-back/.env
 
+# ========================================
 # OS generated files
+# ========================================
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Log files
+# ========================================
+# Logs
+# ========================================
 *.log
-logs
-*.log
+logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .gemini
+
+# ========================================
+# Docs / Backups
+# ========================================
+docs/backup/
