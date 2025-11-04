@@ -1,14 +1,11 @@
-import { useMemo, useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-function useQS() {
-  const { search } = useLocation();
-  return useMemo(() => new URLSearchParams(search), [search]);
+interface CaptchaModalProps {
+  onSuccess: () => void;
 }
 
-export default function BookGate() {
-  const qs = useQS();
+export default function CaptchaModal({ onSuccess }: CaptchaModalProps) {
   const [captchaText, setCaptchaText] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
   const [error, setError] = useState(false);
@@ -23,37 +20,31 @@ export default function BookGate() {
     setCaptchaText(result);
   }, []);
 
-  const onProceed = async () => {
+  const onProceed = () => {
     if (captchaInput.toUpperCase() !== captchaText) {
       setError(true);
       toast.error("보안문자를 정확히 입력해주세요.");
+      // Regenerate captcha on failure
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      let result = "";
+      for (let i = 0; i < 6; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      setCaptchaText(result);
+      setCaptchaInput("");
       return;
     }
-    setError(false);    const kopisId = qs.get("k");
-    const day = qs.get("d"); // YYYY-MM-DD
-    const time = qs.get("t"); // HH:mm
-    if (!kopisId || !day || !time) {
-      toast.error("잘못된 접근입니다.");
-      return;
-    }
-
-    // 캡챠 성공 메시지를 부모 창으로 전달
-    if (window.opener) {
-      window.opener.postMessage({
-        type: 'captcha-verified',
-        payload: { kopisId, day, time }
-      }, window.location.origin);
-    }
-    window.close(); // 팝업 창 닫기
+    setError(false);
+    toast.success("인증에 성공했습니다.");
+    onSuccess();
   };
 
   return (
-    <main className="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm flex items-center justify-center">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-7 text-center shadow-xl w-96">
         <h3 className="font-semibold text-lg mb-2">인증예매</h3>
         <p className="text-gray-600 text-sm mb-4">부정예매 방지를 위해 보안문자를 입력해주세요.</p>
         
-        {/* Captcha text styled like an image box */}
         <div className="bg-gray-100 rounded-md p-2 my-3">
           <p className="text-3xl font-bold tracking-widest select-none">{captchaText}</p>
         </div>
@@ -78,6 +69,6 @@ export default function BookGate() {
           입력완료
         </button>
       </div>
-    </main>
+    </div>
   );
 }

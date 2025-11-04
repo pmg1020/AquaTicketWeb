@@ -12,6 +12,7 @@ import LoginCallback from "@/pages/LoginCallback"; // ✅ 추가
 import RegisterPage from "@/pages/RegisterPage"; // ✅ 추가
 import { Toaster } from "react-hot-toast";
 import BookPage from "@/pages/BookPage";
+import BookGate from "@/pages/BookGate";
 
 import SeatSelection from "@/pages/SeatSelection";
 
@@ -20,14 +21,16 @@ const TOKEN_KEY = "accessToken";
 
 export default function App() {
   const location = useLocation();
-  const isBookPage = location.pathname.startsWith("/book");
+  const isBookingRelatedPage = ["/book", "/captcha"].some((path) =>
+    location.pathname.startsWith(path)
+  );
 
   // 여러 탭 동기화 (다른 탭에서만 리로드/리다이렉트)
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key !== TOKEN_KEY) return;
 
-      const protectedPaths = ["/mypage"];
+      const protectedPaths = ["/mypage", "/book"];
       const onProtected = protectedPaths.some((p) =>
         window.location.pathname.startsWith(p)
       );
@@ -58,7 +61,7 @@ export default function App() {
       {/* 전역 토스트 */}
       <Toaster position="top-center" containerStyle={{ zIndex: 99999 }} toastOptions={{ duration: 1500 }} />
 
-      {!isBookPage && <Header />}
+      {!isBookingRelatedPage && <Header />}
 
       <Routes>
         <Route path="/" element={<Navigate to="/performances" replace />} />
