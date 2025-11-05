@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 interface CaptchaModalProps {
-  onSuccess: () => void; // 인증 성공 또는 나중에 입력 선택 시 호출
+  onSuccess: () => void;
 }
 
 export default function CaptchaModal({ onSuccess }: CaptchaModalProps) {
@@ -10,7 +10,7 @@ export default function CaptchaModal({ onSuccess }: CaptchaModalProps) {
   const [captchaInput, setCaptchaInput] = useState("");
   const [error, setError] = useState(false);
 
-  // ✅ 랜덤 문자 생성 함수
+  // ✅ 랜덤 문자열 생성
   const generateCaptcha = () => {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
     let result = "";
@@ -20,7 +20,6 @@ export default function CaptchaModal({ onSuccess }: CaptchaModalProps) {
     return result;
   };
 
-  // ✅ 최초 1회 캡차 생성
   useEffect(() => {
     setCaptchaText(generateCaptcha());
   }, []);
@@ -29,47 +28,48 @@ export default function CaptchaModal({ onSuccess }: CaptchaModalProps) {
     if (captchaInput.toUpperCase() !== captchaText) {
       setError(true);
       toast.error("보안문자를 정확히 입력해주세요.");
-
-      // 실패 시 새 캡차 생성
       setCaptchaText(generateCaptcha());
       setCaptchaInput("");
       return;
     }
-
     setError(false);
     toast.success("인증에 성공했습니다.");
     onSuccess();
   };
 
-  // ✅ “좌석 먼저 확인하기” 클릭 시
   const handleSkip = () => {
     toast("좌석 선택 후 다시 인증해주세요.", { icon: "🪪" });
-    onSuccess(); // 모달 닫기
+    onSuccess();
   };
 
   return (
     <>
-      {/* ✅ 밝은 회색+흐림 배경 (멜론식) */}
+      {/* ✅ 멜론티켓 스타일 배경 */}
       <div
-        className="absolute inset-0 z-40 bg-[#d9d9d9]/70 backdrop-blur-[2px] transition-all duration-300"
+        className="fixed inset-0 z-40 bg-black/30 flex items-center justify-center"
         onClick={(e) => e.stopPropagation()}
       ></div>
 
       {/* ✅ 중앙 모달 */}
-      <div className="absolute inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div
-          className="bg-white rounded-lg p-7 text-center w-96 shadow-[0_4px_20px_rgba(0,0,0,0.15)] animate-fade-in"
+          className="bg-white rounded-2xl px-8 py-7 text-center w-[380px] shadow-[0_4px_25px_rgba(0,0,0,0.2)] animate-fade-in"
           onClick={(e) => e.stopPropagation()}
         >
-          <h3 className="font-semibold text-lg mb-2 text-green-600">인증예매</h3>
-          <p className="text-gray-600 text-sm mb-4">
+          {/* 타이틀 */}
+          <h3 className="font-semibold text-[17px] text-green-600 mb-2">
+            인증예매
+          </h3>
+          <p className="text-gray-700 text-sm mb-5 leading-relaxed">
             부정예매 방지를 위해 보안문자를 입력해주세요.
           </p>
 
-          {/* 보안문자 + 새로고침 버튼 */}
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <div className="bg-gray-100 rounded-md px-4 py-2 select-none">
-              <p className="text-3xl font-bold tracking-widest">{captchaText}</p>
+          {/* 캡차 영역 */}
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="bg-gray-100 rounded-md px-5 py-2 select-none shadow-inner border border-gray-200">
+              <p className="text-3xl font-bold tracking-widest text-gray-800">
+                {captchaText}
+              </p>
             </div>
             <button
               onClick={() => setCaptchaText(generateCaptcha())}
@@ -103,15 +103,15 @@ export default function CaptchaModal({ onSuccess }: CaptchaModalProps) {
           {/* 버튼 */}
           <button
             onClick={onProceed}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md mt-4 transition-colors"
+            className="w-full bg-[#38b63f] hover:bg-[#2fa637] text-white font-semibold py-2.5 px-4 rounded-md mt-5 transition-colors"
           >
             입력완료
           </button>
 
-          {/* ✅ 좌석 먼저 확인하기 */}
+          {/* 하단 안내 */}
           <p
             onClick={handleSkip}
-            className="mt-3 text-xs text-gray-400 hover:text-gray-600 cursor-pointer select-none"
+            className="mt-3 text-xs text-gray-500 hover:text-gray-700 cursor-pointer select-none"
           >
             좌석 먼저 확인하고 나중에 입력하기
           </p>
