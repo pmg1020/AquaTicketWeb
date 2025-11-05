@@ -4,9 +4,11 @@ import "../../css/maps.css";
 interface SeatMapProps {
   zoneId: string;
   onBack: () => void;
+  onComplete: () => void;
+  isVerified: boolean; // ✅ SeatSelection에서 전달받음
 }
 
-const SeatMap: React.FC<SeatMapProps> = ({ zoneId, onBack }) => {
+const SeatMap: React.FC<SeatMapProps> = ({ zoneId, onBack, onComplete, isVerified }) => {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
 
   const seats = Array.from({ length: 60 }, (_, i) => ({
@@ -24,7 +26,8 @@ const SeatMap: React.FC<SeatMapProps> = ({ zoneId, onBack }) => {
 
   return (
     <div className="seat-map-wrapper">
-      <div className="stage-top">STAGE</div>
+      {/* ✅ zoneId 실제 사용 → eslint 경고 사라짐 */}
+      <div className="stage-top">STAGE - {zoneId} 구역</div>
 
       <div className="seat-grid">
         {seats.map((seat) => (
@@ -49,7 +52,19 @@ const SeatMap: React.FC<SeatMapProps> = ({ zoneId, onBack }) => {
             <li key={s}>{s}</li>
           ))}
         </ul>
-        <button className="pay-btn">예매하기</button>
+
+        {/* ✅ 보안문자 인증 후만 예매 가능 */}
+        <button
+          className="pay-btn"
+          disabled={!isVerified || selectedSeats.length === 0}
+          onClick={() => {
+            if (!isVerified) return alert("보안문자 인증 후 이용 가능합니다.");
+            onComplete(); // 예매하기 → CaptchaModal 다시 표시
+          }}
+        >
+          예매하기
+        </button>
+
         <button
           className="pay-btn"
           style={{ background: "#999", marginTop: "8px" }}
