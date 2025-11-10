@@ -1,77 +1,95 @@
-import React, { useState } from "react";
-import "../../css/maps.css";
+import React, { useState, useEffect } from "react";
 
-interface SeatMapProps {
-  zoneId: string;
-  onBack: () => void;
-  onComplete: () => void;
-  isVerified: boolean; // ✅ SeatSelection에서 전달받음
+interface Seat {
+  id: string;
+  type: "normal" | "wheelchair";
+  x: number;
+  y: number;
 }
 
-const SeatMap: React.FC<SeatMapProps> = ({ zoneId, onBack, onComplete, isVerified }) => {
+export interface SeatMapProps {
+  zoneId: string; // ✅ 현재 선택된 구역
+  onSeatSelect?: (id: string) => void;
+  onBack: () => void;
+  onSeatCountChange?: (count: number) => void; // ✅ 좌석 수 카운트용
+}
+
+const SeatMap: React.FC<SeatMapProps> = ({
+  zoneId,
+  onSeatSelect,
+  onBack,
+  onSeatCountChange,
+}) => {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
 
-  const seats = Array.from({ length: 60 }, (_, i) => ({
-    id: `S${i + 1}`,
-    available: Math.random() > 0.15,
-  }));
+  const handleSeatClick = (seat: Seat) => {
+    if (seat.type === "wheelchair") return;
 
-  const toggleSeat = (seatId: string) => {
     setSelectedSeats((prev) =>
-      prev.includes(seatId)
-        ? prev.filter((s) => s !== seatId)
-        : [...prev, seatId]
+      prev.includes(seat.id)
+        ? prev.filter((id) => id !== seat.id)
+        : [...prev, seat.id]
     );
+
+    onSeatSelect?.(seat.id);
   };
 
-  return (
-    <div className="seat-map-wrapper">
-      {/* ✅ zoneId 실제 사용 → eslint 경고 사라짐 */}
-      <div className="stage-top">STAGE - {zoneId} 구역</div>
+  // ✅ 좌석 선택 수 변경 시 부모에 전달
+  useEffect(() => {
+    onSeatCountChange?.(selectedSeats.length);
+  }, [selectedSeats, onSeatCountChange]);
 
-      <div className="seat-grid">
-        {seats.map((seat) => (
-          <button
-            key={seat.id}
-            className={`seat-btn ${
-              selectedSeats.includes(seat.id)
-                ? "selected"
-                : !seat.available
-                ? "unavailable"
-                : ""
-            }`}
-            onClick={() => seat.available && toggleSeat(seat.id)}
-          />
-        ))}
+  return (
+    <div className="flex flex-col items-center gap-4 w-full">
+      {/* 상단: 뒤로가기 + 현재 구역 표시 */}
+      <div className="flex items-center gap-4 mb-2">
+        <button
+          onClick={onBack}
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition"
+        >
+          ← 구역으로
+        </button>
+        <span className="text-gray-600 text-sm font-medium">
+          현재 구역: <strong>{zoneId}</strong>
+        </span>
       </div>
 
-      <div className="summary-panel">
-        <h3>선택 좌석 ({selectedSeats.length})</h3>
-        <ul>
-          {selectedSeats.map((s) => (
-            <li key={s}>{s}</li>
-          ))}
-        </ul>
+      {/* 스테이지 영역 */}
+      <div className="stage-area">무대방향 (STAGE)</div>
 
-        {/* ✅ 보안문자 인증 후만 예매 가능 */}
-        <button
-          className="pay-btn"
-          disabled={!isVerified || selectedSeats.length === 0}
-          onClick={() => {
-            if (!isVerified) return alert("보안문자 인증 후 이용 가능합니다.");
-            onComplete(); // 예매하기 → CaptchaModal 다시 표시
-          }}
-        >
-          예매하기
-        </button>
+      {/* 좌석 영역 */}
+      <div className="seat-map-container">
+        {[...Array(8)].map((_, rowIndex) => (
+          <div key={rowIndex} className="flex gap-1">
+            {[...Array(20)].map((_, colIndex) => {
+              const seatId = `${rowIndex}-${colIndex}`;
+              const isSelected = selectedSeats.includes(seatId);
+              const baseColor = isSelected ? "#2563eb" : "#ccc";
 
-        <button
-          className="pay-btn"
-          style={{ background: "#999", marginTop: "8px" }}
-          onClick={onBack}
-        >
-          ← 구역선택으로
-        </button>
+              return (
+                <div
+                  key={seatId}
+                  onClick={() =>
+                    handleSeatClick({
+                      id: seatId,
+                      type: "normal",
+                      x: 0,
+                      y: 0,
+                    })
+                  }
+                  className="transition-transform hover:scale-110"
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: 3,
+                    background: baseColor,
+                    cursor: "pointer",
+                  }}
+                />
+              );
+            })}
+          </div>
+        ))}
       </div>
     </div>
   );

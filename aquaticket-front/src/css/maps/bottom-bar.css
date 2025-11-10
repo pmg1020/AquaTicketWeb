@@ -1,0 +1,87 @@
+/* =========================
+   🎟 하단 안내바 (좌측 내부 고정)
+========================= */
+.seat-info-bar {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 720px;
+  background: #3b3b3b;
+  color: #fff;
+  font-size: 15px;
+  border-radius: 6px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.seat-info-bar.expanded {
+  max-height: 260px;
+}
+
+.seat-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: linear-gradient(180deg, #404040 0%, #2f2f2f 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.seat-info-header span {
+  color: #eee;
+}
+
+.seat-info-header .highlight {
+  color: #ffda68;
+  font-weight: 600;
+}
+
+.toggle-btn {
+  font-size: 20px;
+  background: none;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: transform 0.25s ease;
+}
+
+.seat-info-content {
+  background: #2a2a2a;
+  padding: 12px 18px;
+  max-height: 160px;
+  overflow-y: auto;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.seat-info-content::-webkit-scrollbar {
+  width: 4px;
+}
+.seat-info-content::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+}
+
+.seat-detail {
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: #ddd;
+}
+
+.empty-text {
+  font-size: 14px;
+  text-align: center;
+  color: #bbb;
+  padding: 10px 0;
+}

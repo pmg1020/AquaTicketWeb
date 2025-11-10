@@ -1,0 +1,21 @@
+/* ===============================
+🎨 GLOBAL BASE
+=============================== */
+body {
+  font-family: "Pretendard", sans-serif;
+  background: #f9fafb;
+  color: #111;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.hidden {
+  display: none !important;
+}

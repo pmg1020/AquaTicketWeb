@@ -28,7 +28,11 @@
     "paths": {
       "@/*": ["*"]
     },
-    "rootDir": "."
+    "rootDir": ".",
+
+    /* ✅ SVG 타입 인식 추가 */
+    "types": ["vite/client"]
   },
-  "include": ["src"]
+  /* ✅ svg.d.ts를 포함시켜야 함 */
+  "include": ["src", "src/types"]
 }
