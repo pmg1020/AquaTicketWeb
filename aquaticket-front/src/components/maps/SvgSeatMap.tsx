@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import { ReactComponent as BaseMap } from "../../assets/완성본_fixed_v9_melon.svg";
+import { ReactComponent as BaseMap } from "../../assets/seatmap_with_guidance.svg";
 
 interface SvgSeatMapProps {
   onZoneSelect: (zoneId: string) => void;

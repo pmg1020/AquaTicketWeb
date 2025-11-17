@@ -55,28 +55,19 @@ const SeatSelection: React.FC = () => {
   // zone이 선택되지 않은 상태 (메인 좌석도)
   if (!selectedZone) {
     return (
-      <div className="seatmap-container flex-grow" ref={containerRef}>
+      <div className="seatmap-container grow" ref={containerRef}>
         {showCaptcha && <CaptchaModal onSuccess={handleCaptchaSuccess} />}
         <div className="seatmap-left">
 
-          {/* ⭐️ 상단 UI 헤더 (좌측 영역 너비에만 맞춤) */}
+          {/* ⭐️ 상단 UI 헤더 - 로고 제거 */}
           <div className="top-ui-header">
             <div className="title-area">좌석 선택</div>
             <div className="info-area">
-              <select className="concert-title-select">
-                <option>2025 N.Flying LIVE '&CON4 ENCORE : Let's Roll &...</option>
-              </select>
+              <span className="concert-title-text">2025 N.Flying LIVE '&CON4 ENCORE : Let's Roll &4...</span>
               <select className="time-select">
                 <option>2025.12.19 (금) 19:30</option>
               </select>
             </div>
-            <div className="logo-area">Melon 티켓</div>
-          </div>
-
-          {/* ⭐️ 안내 문구 바 (좌측 영역 너비에만 맞춤) */}
-          <div className="guidance-bar">
-            무대는 예매 편의를 위해 표기된 것이므로 실제 무대와 다를 수 있습니다.
-            구역 내 상단이 무대와 가까운 쪽입니다. 가로로 나란히 예매하시기 바랍니다.
           </div>
 
           {/* SVG 지도 컴포넌트는 남은 공간을 flex-grow로 채웁니다. */}
@@ -85,16 +76,13 @@ const SeatSelection: React.FC = () => {
             hoverType={hoverType}
           />
 
-          {/* 하단 안내 바 (absolute position) */}
+          {/* ⭐️ 하단 안내바를 seatmap-left 안으로 이동 */}
           <div className={`seat-info-bar ${isExpanded ? "expanded" : ""}`} onClick={toggleBar}>
             <div className="seat-info-header">
               <span>
-                선택 좌석:
-                <strong className="text-yellow-400 ml-1">
-                  {selectedSeats.length}석
-                </strong>
+                구역을 먼저 선택해주세요 <span className="sub-text">(화면을 직접 선택하거나 우측 좌석등급을 선택해주세요)</span>
               </span>
-              <button className="toggle-btn">{isExpanded ? "︿" : "﹀"}</button>
+              <button className="toggle-btn">∧</button>
             </div>
 
             <div className="seat-info-content">
@@ -111,36 +99,75 @@ const SeatSelection: React.FC = () => {
           </div>
         </div>
 
-        {/* 📋 우측 사이드 패널 (구조 변경 없음, 상단에 바로 붙습니다.) */}
+        {/* 📋 우측 사이드 패널 - 레퍼런스 UI 적용 */}
         <aside className="seat-sidebar">
+          {/* 로고 */}
+          <div className="sidebar-logo">Aqua Ticket</div>
+
+          {/* 미니맵 */}
           <div className="sidebar-mini-map">
-            <SvgSeatMap onZoneSelect={() => { }} />
-            <p className="mini-map-caption">좌석도 전체보기</p>
+            {/* 줌 컨트롤 */}
+            <div className="mini-map-controls">
+              <button className="zoom-btn">+</button>
+              <button className="zoom-btn">−</button>
+            </div>
+            <div className="mini-map-wrapper">
+              <SvgSeatMap onZoneSelect={() => { }} />
+            </div>
           </div>
 
-          <h3 className="sidebar-title">좌석등급 / 잔여석</h3>
-          <ul className="sidebar-seat-list">
-            <li
-              className="seat-item"
-              onMouseEnter={() => setHoverType("standing")}
-              onMouseLeave={() => setHoverType(null)}
-            >
-              <div className="flex items-center">
-                <span className="color-box standing"></span> 스탠딩석
-              </div>
-              <span className="price">132,000원</span>
-            </li>
-            <li
-              className="seat-item"
-              onMouseEnter={() => setHoverType("seat")}
-              onMouseLeave={() => setHoverType(null)}
-            >
-              <div className="flex items-center">
-                <span className="color-box seat"></span> 지정석
-              </div>
-              <span className="price">132,000원</span>
-            </li>
-          </ul>
+          {/* 좌석도 전체보기 버튼 */}
+          <button className="view-full-map-btn">
+            좌석도 전체보기 ›
+          </button>
+
+          {/* 좌석등급/잔여석 섹션 */}
+          <div className="sidebar-section">
+            <div className="sidebar-title-wrapper">
+              <h3 className="sidebar-title">좌석등급/잔여석</h3>
+              <button className="info-icon">ⓘ</button>
+            </div>
+
+            <ul className="sidebar-seat-list">
+              <li
+                className="seat-item"
+                onMouseEnter={() => setHoverType("standing")}
+                onMouseLeave={() => setHoverType(null)}
+              >
+                <div className="seat-item-header">
+                  <div className="seat-item-left">
+                    <span className="color-box standing"></span>
+                    <span>스탠딩석</span>
+                  </div>
+                  <div className="seat-item-right">
+                    <span className="price">132,000원</span>
+                    <span className="expand-arrow">∨</span>
+                  </div>
+                </div>
+              </li>
+              <li
+                className="seat-item"
+                onMouseEnter={() => setHoverType("seat")}
+                onMouseLeave={() => setHoverType(null)}
+              >
+                <div className="seat-item-header">
+                  <div className="seat-item-left">
+                    <span className="color-box seat"></span>
+                    <span>지정석</span>
+                  </div>
+                  <div className="seat-item-right">
+                    <span className="price">132,000원</span>
+                    <span className="expand-arrow">∨</span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+
+            {/* 새로고침 버튼 */}
+            <button className="refresh-btn">새로고침</button>
+          </div>
+
+          {/* 좌석 선택 완료 버튼 */}
           <button className="sidebar-btn">좌석 선택 완료</button>
         </aside>
       </div>
@@ -152,25 +179,17 @@ const SeatSelection: React.FC = () => {
     <div className="seat-selection-page relative h-screen overflow-hidden w-screen flex flex-col">
       {showCaptcha && <CaptchaModal onSuccess={handleCaptchaSuccess} />}
       <div className={showCaptcha ? "pointer-events-none blur-sm brightness-90 flex flex-col h-full" : "flex flex-col h-full"}>
-        <div className="seatmap-container flex-grow">
+        <div className="seatmap-container grow">
           <div className="seatmap-left">
-            {/* ⭐️ top-ui-header와 guidance-bar 추가 */}
+            {/* ⭐️ top-ui-header - 로고 제거 */}
             <div className="top-ui-header">
               <div className="title-area">좌석 선택</div>
               <div className="info-area">
-                <select className="concert-title-select">
-                  <option>2025 N.Flying LIVE '&CON4 ENCORE : Let's Roll &...</option>
-                </select>
+                <span className="concert-title-text">2025 N.Flying LIVE '&CON4 ENCORE : Let's Roll &4...</span>
                 <select className="time-select">
                   <option>2025.12.19 (금) 19:30</option>
                 </select>
               </div>
-              <div className="logo-area">Melon 티켓</div>
-            </div>
-
-            <div className="guidance-bar">
-              무대는 예매 편의를 위해 표기된 것이므로 실제 무대와 다를 수 있습니다.
-              구역 내 상단이 무대와 가까운 쪽입니다. 가로로 나란히 예매하시기 바랍니다.
             </div>
             {/* ⭐️ 상단 UI 추가 후 SeatMap 컴포넌트 렌더링 */}
             <SeatMap
@@ -183,7 +202,7 @@ const SeatSelection: React.FC = () => {
               }
             />
 
-            {/* ✅ 하단 안내바 */}
+            {/* ⭐️ 하단 안내바를 seatmap-left 안으로 이동 */}
             <div
               className={`seat-info-bar ${isExpanded ? "expanded" : ""}`}
               onClick={() => setIsExpanded((p) => !p)}
@@ -197,7 +216,7 @@ const SeatSelection: React.FC = () => {
                 ) : (
                   <span>좌석을 선택해주세요.</span>
                 )}
-                <button className="toggle-btn">{isExpanded ? "︿" : "﹀"}</button>
+                <button className="toggle-btn">∧</button>
               </div>
 
               <div className="seat-info-content">

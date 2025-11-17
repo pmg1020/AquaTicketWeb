@@ -44,14 +44,36 @@ export default function CaptchaModal({ onSuccess }: CaptchaModalProps) {
 
   return (
     <>
-      {/* ✅ 멜론티켓 스타일 배경 */}
+      {/* ✅ 멜론티켓 스타일 배경 - z-index 상승 */}
       <div
-        className="fixed inset-0 z-40 bg-black/30 flex items-center justify-center"
+        className="fixed bg-black/30 flex items-center justify-center"
+        style={{
+          zIndex: 9999,
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100vh'
+        }}
         onClick={(e) => e.stopPropagation()}
       ></div>
 
-      {/* ✅ 중앙 모달 */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* ✅ 중앙 모달 - z-index 상승 */}
+      <div
+        className="fixed flex items-center justify-center"
+        style={{
+          zIndex: 10000,
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100vh'
+        }}
+      >
         <div
           className="bg-white rounded-2xl px-8 py-7 text-center w-[380px] shadow-[0_4px_25px_rgba(0,0,0,0.2)] animate-fade-in"
           onClick={(e) => e.stopPropagation()}

@@ -1,33 +1,50 @@
 /* ===========================
- 📢 하단 안내바 스타일 (최종 수정)
+ 📢 하단 안내바 스타일 (레퍼런스 UI 적용)
 =========================== */
 .seat-info-bar {
   position: absolute;
-  /* ⭐️ 수정: SVG 경계선에서 20px 위에 배치하여 겹침 방지 및 여백 확보 */
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 720px;
-  background: #3b3b3b;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  min-height: 56px; /* ⭐️ 최소 높이 지정 */
+  background: #3a3a3a;
   color: #fff;
-  font-size: 15px;
-  border-radius: 6px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  font-size: 14px;
+  border-radius: 0;
+  box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   transition: all 0.3s ease;
   cursor: pointer;
-  z-index: 10;
+  z-index: 100;
+  flex-shrink: 0; /* ⭐️ 축소 방지 */
 }
 
 .seat-info-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
-  background: linear-gradient(180deg, #404040 0%, #2f2f2f 100%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 14px 28px; /* 18px → 14px로 축소 */
+  background: #3a3a3a;
   font-weight: 400;
+  min-height: 56px;
+}
+
+.seat-info-header span {
+  color: #e8e8e8;
+  font-size: 14px;
+}
+
+.seat-info-header .sub-text {
+  color: #999;
+  font-size: 13px;
+  margin-left: 4px;
+}
+
+.seat-info-header strong {
+  color: #ffd700;
+  font-weight: 600;
+  margin-left: 4px;
 }
 
 .toggle-btn {
@@ -37,12 +54,18 @@
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
+  padding: 4px 8px;
+  transition: transform 0.3s ease;
+}
+
+.seat-info-bar.expanded .toggle-btn {
+  transform: rotate(180deg);
 }
 
 /* 접히는 영역 */
 .seat-info-content {
   background: #2a2a2a;
-  padding: 0 18px;
+  padding: 0 28px;
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease, padding 0.3s ease;
@@ -50,17 +73,25 @@
 
 .seat-info-bar.expanded .seat-info-content {
   max-height: 160px;
-  padding: 10px 18px;
+  padding: 12px 28px;
 }
 
 .seat-detail {
-  font-size: 14px;
+  font-size: 13px;
   color: #ddd;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  padding: 4px 0;
 }
 
 .empty-text {
   text-align: center;
-  color: #bbb;
-  padding: 10px 0;
+  color: #999;
+  padding: 12px 0;
+  font-size: 13px;
+}
+
+/* ⭐️ 하이라이트 텍스트 스타일 */
+.highlight {
+  color: #ffd700;
+  font-weight: 600;
 }

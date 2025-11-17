@@ -1,26 +1,36 @@
 /* ===============================
 🎨 GLOBAL BASE (최종 수정)
 =============================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 html {
-  margin: 0; /* ⭐️ 추가: html 태그의 기본 마진 제거 */
-  padding: 0; /* ⭐️ 추가: html 태그의 기본 패딩 제거 */
-  /* ⭐️ height와 width도 html에 적용하여 body의 높이/너비가 정확히 100%가 되도록 */
+  margin: 0;
+  padding: 0;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 body {
   font-family: "Pretendard", sans-serif;
-  background: #f3f4f6; /* 전체 배경색 설정 */
+  background: #f3f4f6;
   color: #111;
-  margin: 0; /* body의 기본 마진 제거 */
-  padding: 0; /* body의 기본 패딩 제거 */
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
-
-  /* ⭐️ 뷰포트 전체 높이를 차지하도록 */
   height: 100vh;
   width: 100vw;
-  overflow: hidden; /* 스크롤 방지 */
+  overflow: hidden;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 button {
