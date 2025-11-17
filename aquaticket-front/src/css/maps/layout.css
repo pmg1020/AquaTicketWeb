@@ -1,13 +1,76 @@
 /* ===========================
- ⚙️ 전체 레이아웃 구조
+ ⚙️ 전체 레이아웃 구조 (최종 수정)
 =========================== */
+
+/* ⭐️ 상단 헤더 스타일 */
+.top-ui-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+  width: 100%; /* 부모(seatmap-left) 너비를 따름 */
+  box-sizing: border-box;
+}
+
+.top-ui-header .title-area {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  flex-basis: 100px;
+}
+
+.top-ui-header .info-area {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  justify-content: flex-start;
+  padding-left: 20px;
+}
+
+.top-ui-header .logo-area {
+  font-size: 18px;
+  font-weight: 800;
+  color: #497d3c;
+  flex-basis: 120px;
+  text-align: right;
+}
+
+.top-ui-header select {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  background: white;
+  height: 38px;
+}
+
+/* ⭐️ 안내 문구 바 스타일 */
+.guidance-bar {
+  padding: 10px 24px;
+  background: #f7f7f7;
+  color: #666;
+  font-size: 13px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+  width: 100%; /* 부모(seatmap-left) 너비를 따름 */
+  box-sizing: border-box;
+}
+
+
 .seatmap-container {
   display: flex;
   justify-content: space-between;
-  align-items: stretch;
+  flex-grow: 1;
+  align-items: flex-start;
   width: 100%;
   gap: 20px;
   background: #f3f4f6;
+  height: 100%;
 }
 
 /* 좌측 영역 (SVG) */
@@ -15,11 +78,30 @@
   position: relative;
   flex: 1;
   display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  /* ⭐️ 수정: 여기서 배경색 제거 */
+  /* background: #f8f8f8; */
+  padding-bottom: 0px;
+  overflow: hidden;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* ⭐️ SvgSeatMap을 감싸는 컨테이너 스타일 */
+.svg-seatmap-container {
+  flex-grow: 1;
+  height: 100%;
+  margin-bottom: 70px;
+  box-sizing: border-box;
+  display: flex;
   justify-content: center;
   align-items: center;
-  background: #f8f8f8;
-  padding-bottom: 100px; /* 하단 안내바 덮임 방지 */
+  width: 100%;
   overflow: hidden;
+  /* ⭐️ 추가: 여기에 배경색 적용 */
+  background: #f8f8f8;
 }
 
 /* 우측 사이드바 */
@@ -32,10 +114,14 @@
   justify-content: space-between;
   padding: 24px;
   box-sizing: border-box;
+  height: 100%;
 }
 
 /* 상단 미니맵 */
 .sidebar-mini-map {
+  /* ⭐️ 수정: 미니맵을 좌석 등급 목록 아래에 배치해야 하지만, */
+  /* ⭐️ 현재 HTML 구조상 미니맵이 좌석 등급보다 위에 있으므로, 이대로 유지하거나 */
+  /* ⭐️ HTML 구조를 변경해야 합니다. (CSS만으로는 순서 변경 불가) */
   background: #fff;
   border: 1px solid #eee;
   border-radius: 8px;
