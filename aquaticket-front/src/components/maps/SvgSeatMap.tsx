@@ -1,27 +1,36 @@
 import React from "react";
-import { ReactComponent as BaseMap } from "../../assets/base.svg";
+import clsx from "clsx";
+import { ReactComponent as BaseMap } from "../../assets/완성본_fixed_v9_melon.svg";
 
 interface SvgSeatMapProps {
   onZoneSelect: (zoneId: string) => void;
+  hoverType?: "standing" | "seat" | null;
 }
 
-const SvgSeatMap: React.FC<SvgSeatMapProps> = ({ onZoneSelect }) => {
+const SvgSeatMap: React.FC<SvgSeatMapProps> = ({ onZoneSelect, hoverType }) => {
   const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
-    const target = e.target as SVGElement;
-    const id = target.getAttribute("id");
+    const target = e.target as SVGElement | null;
+    if (!target) return;
 
-    // 🚫 휠체어 구역 클릭 막기
-    if (id?.startsWith("wheelchair")) return;
+    // 가장 가까운 구역 g 찾기
+    const zoneGroup = target.closest("g");
+    if (!zoneGroup) return;
 
-    if (id) {
-      console.log("🟦 클릭:", id);
-      onZoneSelect(id);
-    }
+    const zoneId = zoneGroup.getAttribute("id");
+    const zoneType = zoneGroup.getAttribute("data-zone-type");
+
+    if (!zoneId || !zoneType) return;          // data-zone-type 없는건 구역 아님
+    if (zoneType === "disabled") return;       // 비활성 구역 클릭 차단
+
+    onZoneSelect(zoneId);
   };
 
   return (
     <div className="svg-seatmap-container">
-      <BaseMap onClick={handleClick} className="svg-seatmap" />
+      <BaseMap
+        onClick={handleClick}
+        className={clsx("svg-seatmap", hoverType && `hover-${hoverType}`)}
+      />
     </div>
   );
 };

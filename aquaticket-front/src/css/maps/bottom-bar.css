@@ -1,6 +1,6 @@
-/* =========================
-   🎟 하단 안내바 (좌측 내부 고정)
-========================= */
+/* ===========================
+ 📢 하단 안내바 스타일
+=========================== */
 .seat-info-bar {
   position: absolute;
   bottom: 20px;
@@ -13,14 +13,10 @@
   font-size: 15px;
   border-radius: 6px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
-  transition: all 0.3s ease;
   overflow: hidden;
+  transition: all 0.3s ease;
   cursor: pointer;
   z-index: 10;
-}
-
-.seat-info-bar.expanded {
-  max-height: 260px;
 }
 
 .seat-info-header {
@@ -30,57 +26,39 @@
   padding: 14px 18px;
   background: linear-gradient(180deg, #404040 0%, #2f2f2f 100%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.seat-info-header span {
-  color: #eee;
-}
-
-.seat-info-header .highlight {
-  color: #ffda68;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .toggle-btn {
-  font-size: 20px;
   background: none;
-  color: #fff;
   border: none;
-  cursor: pointer;
+  color: #ccc;
+  font-size: 18px;
   line-height: 1;
-  padding: 0;
-  transition: transform 0.25s ease;
+  cursor: pointer;
 }
 
+/* 접히는 영역 */
 .seat-info-content {
   background: #2a2a2a;
-  padding: 12px 18px;
+  padding: 0 18px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.seat-info-bar.expanded .seat-info-content {
   max-height: 160px;
-  overflow-y: auto;
-  animation: fadeIn 0.25s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.seat-info-content::-webkit-scrollbar {
-  width: 4px;
-}
-.seat-info-content::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.25);
-  border-radius: 10px;
+  padding: 10px 18px;
 }
 
 .seat-detail {
   font-size: 14px;
-  margin-bottom: 4px;
   color: #ddd;
+  margin-bottom: 4px;
 }
 
 .empty-text {
-  font-size: 14px;
   text-align: center;
   color: #bbb;
   padding: 10px 0;

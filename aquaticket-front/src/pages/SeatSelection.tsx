@@ -3,7 +3,6 @@ import SvgSeatMap from "../components/maps/SvgSeatMap";
 import SeatMap from "../components/maps/SeatMap";
 import CaptchaModal from "../components/modals/CaptchaModal";
 
-// 스타일 분리
 import "@/css/maps/base.css";
 import "@/css/maps/layout.css";
 import "@/css/maps/seatmap.css";
@@ -14,20 +13,21 @@ const SeatSelection: React.FC = () => {
   const [showCaptcha, setShowCaptcha] = useState(true);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [hoverType, setHoverType] = useState<"standing" | "seat" | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleCaptchaSuccess = () => setShowCaptcha(false);
 
-  // ✅ 고해상도 대응 실시간 스케일 조정 (멜론티켓 수준)
+  // ✅ 반응형 스케일 (멜론티켓 수준)
   useEffect(() => {
-    const baseWidth = 1280; // 디자인 기준 폭
+    const baseWidth = 1280;
     let frame: number;
 
     const applyScale = () => {
       if (!containerRef.current) return;
       const viewportWidth = window.innerWidth;
-      const pixelRatio = window.devicePixelRatio || 1; // DPI 기반 비율
-      const effectiveWidth = viewportWidth * pixelRatio * 0.5; // 실제 DPI 반영
+      const pixelRatio = window.devicePixelRatio || 1;
+      const effectiveWidth = viewportWidth * pixelRatio * 0.5;
       const scale = Math.max(0.5, Math.min(1, effectiveWidth / baseWidth));
       containerRef.current.style.transform = `scale(${scale})`;
       containerRef.current.style.transformOrigin = "top center";
@@ -38,12 +38,10 @@ const SeatSelection: React.FC = () => {
       frame = requestAnimationFrame(applyScale);
     });
 
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
-    }
+    if (containerRef.current) resizeObserver.observe(containerRef.current);
 
     window.addEventListener("resize", applyScale);
-    applyScale(); // 초기 실행
+    applyScale();
 
     return () => {
       cancelAnimationFrame(frame);
@@ -54,21 +52,19 @@ const SeatSelection: React.FC = () => {
 
   return (
     <div className="seat-selection-page relative">
-      {/* ✅ 보안문자 모달 */}
       {showCaptcha && <CaptchaModal onSuccess={handleCaptchaSuccess} />}
 
-      {/* ✅ 모달 시 블러 */}
       <div className={showCaptcha ? "pointer-events-none blur-sm brightness-90" : ""}>
         {!selectedZone ? (
-          /* =========================
-             🎟 구역 선택 단계
-          ========================== */
           <div className="seatmap-container" ref={containerRef}>
-            {/* 🎟️ 좌측 SVG 영역 */}
+            {/* 🎟 좌측 SVG 영역 */}
             <div className="seatmap-left">
-              <SvgSeatMap onZoneSelect={(zoneId) => setSelectedZone(zoneId)} />
+              <SvgSeatMap
+                onZoneSelect={(zoneId) => setSelectedZone(zoneId)}
+                hoverType={hoverType}
+              />
 
-              {/* ✅ 좌측 내부 하단 안내바 */}
+              {/* ✅ 좌측 하단 안내바 */}
               <div
                 className={`seat-info-bar ${isExpanded ? "expanded" : ""}`}
                 onClick={() => setIsExpanded((p) => !p)}
@@ -108,13 +104,21 @@ const SeatSelection: React.FC = () => {
 
               <h3 className="sidebar-title">좌석등급 / 잔여석</h3>
               <ul className="sidebar-seat-list">
-                <li className="seat-item">
+                <li
+                  className="seat-item"
+                  onMouseEnter={() => setHoverType("standing")}
+                  onMouseLeave={() => setHoverType(null)}
+                >
                   <div className="flex items-center">
                     <span className="color-box standing"></span> 스탠딩석
                   </div>
                   <span className="price">132,000원</span>
                 </li>
-                <li className="seat-item">
+                <li
+                  className="seat-item"
+                  onMouseEnter={() => setHoverType("seat")}
+                  onMouseLeave={() => setHoverType(null)}
+                >
                   <div className="flex items-center">
                     <span className="color-box seat"></span> 지정석
                   </div>
@@ -126,9 +130,6 @@ const SeatSelection: React.FC = () => {
             </aside>
           </div>
         ) : (
-          /* =========================
-             💺 좌석 선택 단계
-          ========================== */
           <div className="seatmap-container" ref={containerRef}>
             <div className="seatmap-left">
               <SeatMap
@@ -141,7 +142,7 @@ const SeatSelection: React.FC = () => {
                 }
               />
 
-              {/* ✅ 하단 안내바 (좌측 내부 고정) */}
+              {/* ✅ 하단 안내바 */}
               <div
                 className={`seat-info-bar ${isExpanded ? "expanded" : ""}`}
                 onClick={() => setIsExpanded((p) => !p)}
@@ -172,7 +173,7 @@ const SeatSelection: React.FC = () => {
               </div>
             </div>
 
-            {/* 📋 우측 패널 (좌석 선택 후) */}
+            {/* 📋 우측 패널 (선택 후) */}
             <aside className="seat-sidebar full-height">
               <div className="sidebar-body">
                 <h3 className="sidebar-title">현재 구역: {selectedZone}</h3>
