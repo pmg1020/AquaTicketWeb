@@ -1,3 +1,5 @@
+/* /c:/aquaticket/aquaticket-front/src/css/maps/layout.css */
+
 /* ===========================
  ⚙️ 전체 레이아웃 구조 (최종 수정)
 =========================== */
@@ -11,7 +13,7 @@
   background: #fff;
   border-bottom: 1px solid #eee;
   flex-shrink: 0;
-  width: 100%; /* 부모(seatmap-left) 너비를 따름 */
+  width: 100%;
   box-sizing: border-box;
   gap: 20px;
 }
@@ -57,50 +59,59 @@
   text-align: center;
   border-bottom: 1px solid #eee;
   flex-shrink: 0;
-  width: 100%; /* 부모(seatmap-left) 너비를 따름 */
+  width: 100%;
   box-sizing: border-box;
 }
 
 
 .seatmap-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start; /* ✅ 좌우 패널 밀착 */
   flex-grow: 1;
-  align-items: stretch; /* flex-start → stretch로 변경 */
+  align-items: stretch;
   width: 100%;
   gap: 0;
-  background: #f3f4f6;
-  height: 100vh; /* 100% → 100vh로 고정 */
+  background: none;
+  height: 100%;
   overflow: hidden;
 }
 
 /* 좌측 영역 (SVG) */
 .seatmap-left {
   position: relative;
-  flex: 1;
+  flex: 0 0 auto;
+  width: 682px; /* ✅ 좌석 지도의 고정 너비에 맞춤 */
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   padding-bottom: 0;
-  overflow: hidden; /* 스크롤 완전 제거 */
-  height: 100vh; /* 뷰포트 높이 고정 */
+  overflow: hidden;
+  height: 100%;
   box-sizing: border-box;
+  background: #fff;
 }
 
 /* ⭐️ SvgSeatMap을 감싸는 컨테이너 스타일 */
 .svg-seatmap-container {
-  flex-grow: 1;
-  height: 100%;
-  /* ⭐️ 3단계 수정: margin-bottom 제거 (하단 안내바가 fixed로 변경됨) */
+  flex-grow: 0;
+  flex-shrink: 0;
+  width: 682px;
+  margin-left: auto;
+  margin-right: auto;
+
+  /* ✅ 종횡비 유지를 위한 CSS 트릭 */
+  height: 0;
+  padding-bottom: 88.3%;
+
+  position: relative;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
   overflow: hidden;
-  /* ⭐️ 추가: 여기에 배경색 적용 */
-  background: #f8f8f8;
+  background: #fff;
 }
 
 /* 우측 사이드바 */
@@ -112,7 +123,7 @@
   flex-direction: column;
   padding: 20px;
   box-sizing: border-box;
-  height: 100vh; /* 100% → 100vh로 고정 */
+  height: 100%;
   gap: 16px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -127,28 +138,44 @@
   padding: 8px 0;
 }
 
-/* ⭐️ 미니맵 스타일 */
+/* ⭐️ 미니맵 스타일 - SVG 종횡비 유지 */
 .sidebar-mini-map {
-  background: #f8f8f8;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
-  padding: 16px;
+  background: #e8e8e8;
+  border: none;
+  border-radius: 4px;
+  padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
+  width: 100%;
+  height: 200px; /* 200px → 180px */
+  overflow: hidden;
 }
 
 .mini-map-wrapper {
-  width: 100%;
-  max-width: 200px;
+  width: 110%; /* 100% → 105%로 살짝 늘림 */
+  margin-left: -5px;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  user-select: none;
+  background: #e8e8e8;
 }
 
-/* 줌 컨트롤 버튼 */
+.mini-map-wrapper:active {
+  cursor: grabbing;
+}
+
+/* 줌 컨트롤 버튼 - 멜론티켓 스타일 */
 .mini-map-controls {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 10px; /* 16px → 10px */
+  right: 10px; /* 16px → 10px */
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -156,13 +183,13 @@
 }
 
 .zoom-btn {
-  width: 28px;
-  height: 28px;
+  width: 26px; /* 28px → 26px */
+  height: 26px;
   background: #fff;
   border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 18px;
-  font-weight: 300;
+  border-radius: 2px; /* 4px → 2px */
+  font-size: 16px; /* 18px → 16px */
+  font-weight: 400; /* 300 → 400 */
   color: #666;
   cursor: pointer;
   display: flex;

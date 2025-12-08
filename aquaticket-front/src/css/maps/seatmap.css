@@ -1,6 +1,11 @@
+/* /c:/aquaticket/aquaticket-front/src/css/maps/seatmap.css */
+
 .svg-seatmap {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
   transition: all 0.3s ease;
 }
 
@@ -44,4 +49,12 @@
   stroke: #222;
   stroke-width: 2px;
   transition: stroke 0.2s ease;
+}
+
+/* ⭐️ 미니맵 전용 SVG 스타일: 크기를 강제로 줄임 */
+.minimap-svg {
+  position: static;
+  width: 100%;
+  height: auto;
+  /* transform 속성은 SeatSelection.tsx의 인라인 style로 대체 */
 }

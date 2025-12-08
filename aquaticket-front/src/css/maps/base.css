@@ -1,3 +1,5 @@
+/* /c:/aquaticket/aquaticket-front/src/css/maps/base.css */
+
 /* ===============================
 🎨 GLOBAL BASE (최종 수정)
 =============================== */
@@ -12,7 +14,7 @@ html {
   padding: 0;
   height: 100%;
   width: 100%;
-  overflow: hidden;
+  overflow: hidden; /* ✅ HTML 레벨에 overflow: hidden 강제 */
 }
 
 body {
@@ -22,9 +24,9 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  height: 100vh;
+  height: 100%;
   width: 100vw;
-  overflow: hidden;
+  overflow: hidden; /* ✅ Body 레벨에 overflow: hidden 강제 */
 }
 
 #root {

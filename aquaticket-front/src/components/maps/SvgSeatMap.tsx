@@ -1,3 +1,5 @@
+/* /c:/aquaticket/aquaticket-front/src/components/maps/SvgSeatMap.tsx */
+
 import React from "react";
 import clsx from "clsx";
 import { ReactComponent as BaseMap } from "../../assets/seatmap_with_guidance.svg";
@@ -5,31 +7,48 @@ import { ReactComponent as BaseMap } from "../../assets/seatmap_with_guidance.sv
 interface SvgSeatMapProps {
   onZoneSelect: (zoneId: string) => void;
   hoverType?: "standing" | "seat" | null;
+  isMiniMap?: boolean;
 }
 
-const SvgSeatMap: React.FC<SvgSeatMapProps> = ({ onZoneSelect, hoverType }) => {
+const SvgSeatMap: React.FC<SvgSeatMapProps> = ({ onZoneSelect, hoverType, isMiniMap = false }) => {
   const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    // 가장 가까운 구역 g 찾기
     const target = e.target as SVGElement | null;
     if (!target) return;
 
-    // 가장 가까운 구역 g 찾기
     const zoneGroup = target.closest("g");
     if (!zoneGroup) return;
 
     const zoneId = zoneGroup.getAttribute("id");
     const zoneType = zoneGroup.getAttribute("data-zone-type");
 
-    if (!zoneId || !zoneType) return;          // data-zone-type 없는건 구역 아님
-    if (zoneType === "disabled") return;       // 비활성 구역 클릭 차단
+    if (!zoneId || !zoneType) return;
+    if (zoneType === "disabled") return;
 
     onZoneSelect(zoneId);
   };
 
   return (
-    <div className="svg-seatmap-container">
+    <div
+      className="svg-seatmap-container"
+      style={isMiniMap ? {
+        width: '100%', // 240px → 100%
+        height: 'auto',
+        padding: 0,
+        position: 'static'
+      } : undefined}
+    >
       <BaseMap
         onClick={handleClick}
-        className={clsx("svg-seatmap", hoverType && `hover-${hoverType}`)}
+        className={clsx(
+          "svg-seatmap",
+          hoverType && `hover-${hoverType}`,
+          isMiniMap && 'minimap-svg'
+        )}
+        style={isMiniMap ? {
+          width: '100%',
+          height: 'auto'
+        } : undefined}
       />
     </div>
   );
