@@ -47,7 +47,7 @@ public class BookingController {
     @PostMapping("/confirm")
     public ResponseEntity<com.aquaticket.aquaticketback.booking.dto.ConfirmResponse> confirmBooking() {
         // 실제 데이터베이스 작업 없이 더미 ID 반환
-        return ResponseEntity.ok(new com.aquaticket.aquaticketback.booking.dto.ConfirmResponse(123L));
+        return ResponseEntity.ok(new com.aquaticket.aquaticketback.booking.dto.ConfirmResponse(123L, "OK"));
     }
     // --- 임시 예매 확정 엔드포인트 끝 ---
 
