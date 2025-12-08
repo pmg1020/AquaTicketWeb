@@ -28,14 +28,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain chain) throws ServletException, IOException {
 
         String header = req.getHeader("Authorization");
+        String uri = req.getRequestURI();
+
+        System.out.println("[JWT Filter] Request: " + req.getMethod() + " " + uri);
+        System.out.println("[JWT Filter] Has Authorization header: " + (header != null));
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7).trim();
+            System.out.println("[JWT Filter] Token prefix: " + token.substring(0, Math.min(20, token.length())) + "...");
 
             try {
                 io.jsonwebtoken.Jws<io.jsonwebtoken.Claims> claims = tokenProvider.validateToken(token);
                 String email = claims.getBody().getSubject();
                 String role  = claims.getBody().get("role", String.class);
+
+                System.out.println("[JWT Filter] Token validated successfully. Email: " + email + ", Role: " + role);
 
                 List<GrantedAuthority> auths = List.of(new SimpleGrantedAuthority("ROLE_" + role));
                 UsernamePasswordAuthenticationToken auth =
@@ -44,8 +51,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (Exception e) {
+                System.out.println("[JWT Filter] Token validation FAILED: " + e.getClass().getSimpleName() + " - " + e.getMessage());
                 req.setAttribute("jwtError", e.getMessage());
             }
+        } else {
+            System.out.println("[JWT Filter] No valid Authorization header found");
         }
 
         chain.doFilter(req, res);

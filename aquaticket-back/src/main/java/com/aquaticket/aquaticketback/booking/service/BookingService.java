@@ -65,7 +65,7 @@ public class BookingService {
     @Transactional
     public Long ensureShowtime(String kopisId, String startAt) {
         LocalDateTime parsedStartAt = LocalDateTime.parse(startAt);
-        Optional<Showtime> existingShowtime = showtimeRepository.findByKopisIdAndStartAt(kopisId, parsedStartAt);
+        Optional<Showtime> existingShowtime = showtimeRepository.findFirstByKopisIdAndStartAt(kopisId, parsedStartAt);
 
         if (existingShowtime.isPresent()) {
             return existingShowtime.get().getId();

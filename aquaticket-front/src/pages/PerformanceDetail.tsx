@@ -114,6 +114,16 @@ export default function PerformanceDetail() {
       toast.error("공연 정보가 올바르지 않습니다. 날짜와 회차를 먼저 선택해주세요.");
       return;
     }
+
+    // 로그인 체크
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      toast.error("로그인이 필요합니다.");
+      const currentPath = window.location.pathname + window.location.search;
+      navigate(`/login?next=${encodeURIComponent(currentPath)}`);
+      return;
+    }
+
     const y = selectedDate.getFullYear();
     const m = String(selectedDate.getMonth() + 1).padStart(2, "0");
     const d = String(selectedDate.getDate()).padStart(2, "0");

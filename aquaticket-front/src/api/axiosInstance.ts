@@ -42,6 +42,12 @@ function buildNextParam(): string {
 // === 요청 인터셉터: 토큰 부착 ===
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = localStorage.getItem(TOKEN_KEY);
+  console.log("[Axios Request Debug]", {
+    url: config.url,
+    method: config.method,
+    hasToken: !!token,
+    tokenPrefix: token ? token.substring(0, 20) + "..." : "none"
+  });
   if (token) {
     config.headers = AxiosHeaders.from(config.headers);
     config.headers.set("Authorization", `Bearer ${token}`);

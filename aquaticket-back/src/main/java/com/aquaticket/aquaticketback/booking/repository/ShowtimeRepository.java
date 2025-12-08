@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
     Optional<Showtime> findByShowAndStartAt(Show show, LocalDateTime startAt);
-    Optional<Showtime> findByKopisIdAndStartAt(String kopisId, LocalDateTime startAt);
+    Optional<Showtime> findFirstByKopisIdAndStartAt(String kopisId, LocalDateTime startAt);
 }
