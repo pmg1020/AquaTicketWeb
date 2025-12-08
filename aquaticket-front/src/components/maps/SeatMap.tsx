@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 interface Seat {
   id: string;
@@ -12,6 +13,7 @@ export interface SeatMapProps {
   onSeatSelect?: (id: string) => void;
   onBack: () => void;
   onSeatCountChange?: (count: number) => void; // ✅ 좌석 수 카운트용
+  maxSeats?: number; // 최대 선택 가능 좌석 수
 }
 
 const SeatMap: React.FC<SeatMapProps> = ({
@@ -19,17 +21,25 @@ const SeatMap: React.FC<SeatMapProps> = ({
   onSeatSelect,
   onBack,
   onSeatCountChange,
+  maxSeats = 2,
 }) => {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
 
   const handleSeatClick = (seat: Seat) => {
     if (seat.type === "wheelchair") return;
 
-    setSelectedSeats((prev) =>
-      prev.includes(seat.id)
-        ? prev.filter((id) => id !== seat.id)
-        : [...prev, seat.id]
-    );
+    setSelectedSeats((prev) => {
+      const isSelected = prev.includes(seat.id);
+      if (isSelected) {
+        return prev.filter((id) => id !== seat.id);
+      } else {
+        if (prev.length >= maxSeats) {
+          toast.error(`최대 ${maxSeats}석까지만 선택 가능합니다.`);
+          return prev;
+        }
+        return [...prev, seat.id];
+      }
+    });
 
     onSeatSelect?.(seat.id);
   };

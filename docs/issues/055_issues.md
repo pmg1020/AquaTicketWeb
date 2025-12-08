@@ -1,1 +1,0 @@
-GET http://localhost:5173/src/pages/BookGate.tsx net::ERR_ABORTED 500 (Internal Server Error)

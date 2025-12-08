@@ -10,6 +10,8 @@ import "@/css/maps/layout.css";
 import "@/css/maps/seatmap.css";
 import "@/css/maps/bottom-bar.css";
 
+const MAX_SEATS_PER_PERSON = 2; // 인당 최대 예매 가능 좌석 수
+
 const SeatSelection: React.FC = () => {
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [showCaptcha, setShowCaptcha] = useState(true);
@@ -242,7 +244,7 @@ const SeatSelection: React.FC = () => {
               <div className={`seat-info-bar ${isExpanded ? "expanded" : ""}`} onClick={toggleBar}>
                 <div className="seat-info-header">
                   <span>
-                    구역을 먼저 선택해주세요 <span className="sub-text">(화면을 직접 선택하거나 우측 좌석등급을 선택해주세요)</span>
+                    구역을 먼저 선택해주세요 <span className="sub-text">(1인 최대 {MAX_SEATS_PER_PERSON}매 선택 가능)</span>
                   </span>
                   <button className="toggle-btn">∧</button>
                 </div>
@@ -383,6 +385,7 @@ const SeatSelection: React.FC = () => {
             <SeatMap
               zoneId={selectedZone}
               onBack={() => setSelectedZone(null)}
+              maxSeats={MAX_SEATS_PER_PERSON} // ✅ 최대 좌석 수 전달
               onSeatCountChange={(count: number) =>
                 setSelectedSeats(
                   Array.from({ length: count }, (_, i) => `${selectedZone} ${i + 301}`)
@@ -402,7 +405,7 @@ const SeatSelection: React.FC = () => {
                     <span className="highlight">{selectedSeats.length}석</span>이 선택되었습니다.
                   </span>
                 ) : (
-                  <span>좌석을 선택해주세요.</span>
+                  <span>좌석을 선택해주세요. (1인 최대 {MAX_SEATS_PER_PERSON}매)</span>
                 )}
                 <button className="toggle-btn">∧</button>
               </div>
