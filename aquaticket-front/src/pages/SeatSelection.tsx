@@ -1,9 +1,17 @@
 /* /c:/aquaticket/aquaticket-front/src/pages/SeatSelection.tsx */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import SvgSeatMap from "../components/maps/SvgSeatMap";
 import SeatMap from "../components/maps/SeatMap";
 import CaptchaModal from "../components/modals/CaptchaModal";
+import useBookingStore from "@/stores/useBookingStore";
+import { ensureShowtime, type SeatAvailability } from "@/api/booking"; // fetchAvailability 제거
+import toast from "react-hot-toast";
+import { isAxiosError } from "axios";
+
+import { parseSvgSeatmap } from "../utils/svgSeatParser"; // SVG 파서 임포트
+import svgContent from '../assets/seatmap_demo.svg?raw'; // SVG 파일 내용을 문자열로 임포트
 
 import "@/css/maps/base.css";
 import "@/css/maps/layout.css";
@@ -13,9 +21,17 @@ import "@/css/maps/bottom-bar.css";
 const MAX_SEATS_PER_PERSON = 2; // 인당 최대 예매 가능 좌석 수
 
 const SeatSelection: React.FC = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { setShowtimeId, setSelectedSeats: setStoreSelectedSeats } = useBookingStore();
+
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [showCaptcha, setShowCaptcha] = useState(true);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [availability, setAvailability] = useState<SeatAvailability[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [hoverType, setHoverType] = useState<"standing" | "seat" | null>(null);
   const [miniMapScale, setMiniMapScale] = useState(1.0);
@@ -23,6 +39,43 @@ const SeatSelection: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const miniMapRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+    const kopisId = searchParams.get("k");
+    const date = searchParams.get("d");
+    const time = searchParams.get("t");
+
+    if (!kopisId || !date || !time) {
+      setError("잘못된 접근입니다. 공연 정보가 없습니다.");
+      setLoading(false);
+      return;
+    }
+
+    const startAt = `${date}T${time}:00`;
+
+    const initialize = async () => {
+      try {
+        setLoading(true);
+        const showtimeId = await ensureShowtime(kopisId, startAt);
+        setShowtimeId(showtimeId);
+        // const seats = await fetchAvailability(showtimeId); // 백엔드 호출 대신 SVG 파서 사용
+        const seats = await parseSvgSeatmap(svgContent);
+        setAvailability(seats);
+      } catch (err) {
+        if (isAxiosError(err) && err.response?.status === 401) {
+          toast.error("로그인이 필요합니다.");
+          navigate(`/login?next=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+        } else {
+          setError("좌석 정보를 불러오는데 실패했습니다.");
+          console.error(err);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initialize();
+  }, [searchParams, setShowtimeId, navigate]);
 
   const handleCaptchaSuccess = () => setShowCaptcha(false);
 
@@ -213,6 +266,37 @@ const SeatSelection: React.FC = () => {
     setIsDragging(false);
   };
 
+  const handleSeatSelect = (seatId: string) => {
+    setSelectedSeats((prev) => {
+      const isSelected = prev.includes(seatId);
+      if (isSelected) {
+        return prev.filter((id) => id !== seatId);
+      } else {
+        if (prev.length >= MAX_SEATS_PER_PERSON) {
+          toast.error(`최대 ${MAX_SEATS_PER_PERSON}석까지만 선택 가능합니다.`);
+          return prev;
+        }
+        return [...prev, seatId];
+      }
+    });
+  };
+
+  const handleCompleteSelection = () => {
+    const seatsToStore = availability.filter((seat) =>
+      selectedSeats.includes(String(seat.seatId))
+    );
+    setStoreSelectedSeats(seatsToStore);
+    navigate("/book/payment");
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   // zone이 선택되지 않은 상태 (메인 좌석도)
   if (!selectedZone) {
     return (
@@ -251,11 +335,13 @@ const SeatSelection: React.FC = () => {
 
                 <div className="seat-info-content">
                   {selectedSeats.length > 0 ? (
-                    selectedSeats.map((seat, idx) => (
-                      <div key={idx} className="seat-detail">
-                        FLOOR층 {seat}번
-                      </div>
-                    ))
+                    availability
+                      .filter(seat => selectedSeats.includes(String(seat.seatId)))
+                      .map((seat) => (
+                        <div key={seat.seatId} className="seat-detail">
+                          {seat.zone} / {seat.row}열 {seat.number}번
+                        </div>
+                      ))
                   ) : (
                     <p className="empty-text">선택된 좌석이 없습니다.</p>
                   )}
@@ -353,7 +439,7 @@ const SeatSelection: React.FC = () => {
               </div>
 
               {/* 좌석 선택 완료 버튼 */}
-              <button className="sidebar-btn">좌석 선택 완료</button>
+              <button className="sidebar-btn" onClick={handleCompleteSelection} disabled={selectedSeats.length === 0}>좌석 선택 완료</button>
             </aside>
           </div>
         </div>
@@ -385,12 +471,10 @@ const SeatSelection: React.FC = () => {
             <SeatMap
               zoneId={selectedZone}
               onBack={() => setSelectedZone(null)}
-              maxSeats={MAX_SEATS_PER_PERSON} // ✅ 최대 좌석 수 전달
-              onSeatCountChange={(count: number) =>
-                setSelectedSeats(
-                  Array.from({ length: count }, (_, i) => `${selectedZone} ${i + 301}`)
-                )
-              }
+              maxSeats={MAX_SEATS_PER_PERSON}
+              availability={availability}
+              selectedSeats={selectedSeats}
+              onSeatSelect={handleSeatSelect}
             />
 
             {/* ⭐️ 하단 안내바 */}
@@ -412,11 +496,13 @@ const SeatSelection: React.FC = () => {
 
               <div className="seat-info-content">
                 {selectedSeats.length > 0 ? (
-                  selectedSeats.map((seat, idx) => (
-                    <div key={idx} className="seat-detail">
-                      FLOOR층 {seat}번
-                    </div>
-                  ))
+                  availability
+                    .filter(seat => selectedSeats.includes(String(seat.seatId)))
+                    .map((seat) => (
+                      <div key={seat.seatId} className="seat-detail">
+                        {seat.zone} / {seat.row}열 {seat.number}번
+                      </div>
+                    ))
                 ) : (
                   <p className="empty-text">선택된 좌석이 없습니다.</p>
                 )}
@@ -437,6 +523,7 @@ const SeatSelection: React.FC = () => {
               <button
                 className={`complete-btn ${!selectedSeats.length ? "disabled" : ""}`}
                 disabled={!selectedSeats.length}
+                onClick={handleCompleteSelection}
               >
                 좌석 선택 완료
               </button>

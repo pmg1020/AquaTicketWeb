@@ -4,6 +4,7 @@ package com.aquaticket.aquaticketback.booking.controller;
 import com.aquaticket.aquaticketback.booking.dto.BookingHistoryDto;
 import com.aquaticket.aquaticketback.booking.dto.EnsureShowtimeRequest;
 import com.aquaticket.aquaticketback.booking.dto.EnsureShowtimeResponse;
+import com.aquaticket.aquaticketback.booking.dto.ConfirmResponse;
 import com.aquaticket.aquaticketback.booking.service.BookingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,5 +42,13 @@ public class BookingController {
         Long showtimeId = bookingService.ensureShowtime(request.getKopisId(), request.getStartAt());
         return ResponseEntity.ok(new EnsureShowtimeResponse(showtimeId));
     }
+
+    // --- 임시 예매 확정 엔드포인트 ---
+    @PostMapping("/confirm")
+    public ResponseEntity<com.aquaticket.aquaticketback.booking.dto.ConfirmResponse> confirmBooking() {
+        // 실제 데이터베이스 작업 없이 더미 ID 반환
+        return ResponseEntity.ok(new com.aquaticket.aquaticketback.booking.dto.ConfirmResponse(123L));
+    }
+    // --- 임시 예매 확정 엔드포인트 끝 ---
 
 }

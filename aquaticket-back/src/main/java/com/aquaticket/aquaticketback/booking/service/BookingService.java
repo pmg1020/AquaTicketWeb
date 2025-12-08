@@ -107,8 +107,9 @@ public class BookingService {
 
             return SeatAvailabilityDto.builder()
                     .seatId(seat.getId())
-                    .rowLabel(seat.getRowLabel())
-                    .seatNo(seat.getSeatNo())
+                    .zone(seat.getZone())
+                    .row(seat.getRowLabel())
+                    .number(String.valueOf(seat.getSeatNo()))
                     .price(seat.getPrice())
                     .status(status)
                     .build();

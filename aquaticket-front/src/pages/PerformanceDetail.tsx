@@ -1,6 +1,6 @@
 // src/pages/PerformanceDetail.tsx
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import toast from "react-hot-toast";
@@ -23,6 +23,7 @@ import "@/css/performance-detail.css";
 type CalValue = Date | null;
 
 export default function PerformanceDetail() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
   const [detail, setDetail] = useState<KopisDetailRaw | null>(null);
@@ -54,22 +55,7 @@ export default function PerformanceDetail() {
     };
   }, [id]);
 
-  useEffect(() => {
-    const handleBookingCompleted = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) {
-        return;
-      }
-      if (event.data.type === 'booking-completed') {
-        // 예매 완료 메시지를 받으면 부모창 새로고침
-        window.location.reload();
-      }
-    };
 
-    window.addEventListener('message', handleBookingCompleted);
-    return () => {
-      window.removeEventListener('message', handleBookingCompleted);
-    };
-  }, []); // 의존성 배열은 비워둡니다.
 
   // ⏱️ 회차(시간) 목록: KOPIS의 dtguidance(예: "화~금 19시 / 토 14시, 19시 ...")를 파싱하기 전
   //   데모용으로 간단히 두 개 시간 슬롯을 노출. 실제로는 날짜에 따라 스케줄 생성/표시.
@@ -121,7 +107,7 @@ export default function PerformanceDetail() {
   const title = detail.prfnm ?? "-";
   const subline = `${detail.prfpdfrom ?? "-"} ~ ${detail.prfpdto ?? "-"}`;
 
-  console.log({ detail, detailPoster: detail?.poster });
+
 
   const onClickBook = async () => {
     if (!id || !selectedDate || !selectedTime) {
@@ -135,12 +121,8 @@ export default function PerformanceDetail() {
 
     const seatSelectionUrl = `/book/select-seats?k=${id}&d=${day}&t=${selectedTime}`;
 
-    const bookWindow = window.open(seatSelectionUrl, 'bookPage', 'width=1200,height=800');
-
-    if (!bookWindow || bookWindow.closed) {
-        toast.error('팝업 차단이 설정되어 있습니다. 팝업 허용 후 다시 시도해주세요.');
-        return; // 팝업이 차단되었으므로 이후 로직 실행 중단
-    }
+    const windowFeatures = "width=1280,height=800,scrollbars=yes";
+    window.open(seatSelectionUrl, '_blank', windowFeatures);
   };
 
   return (

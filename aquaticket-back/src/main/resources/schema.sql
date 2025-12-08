@@ -2,6 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS venues (
                                       id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                                      kopis_facility_id VARCHAR(20) NULL UNIQUE,
                                       name VARCHAR(200) NOT NULL
     );
 

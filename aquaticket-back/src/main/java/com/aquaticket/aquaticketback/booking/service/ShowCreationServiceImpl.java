@@ -45,11 +45,12 @@ public class ShowCreationServiceImpl implements ShowCreationService {
     public Show createShowFromKopis(String kopisId, LocalDateTime startAt) {
         KopisDetail detail = fetchKopisDetail(kopisId);
 
-        // Step 1: Explicitly find or create Venue, then flush.
-        Optional<Venue> venueOpt = venueRepository.findByName(detail.getFcltynm());
+        // Step 1: Explicitly find or create Venue using the KOPIS facility ID, then flush.
+        Optional<Venue> venueOpt = venueRepository.findByKopisFacilityId(detail.getMt10id());
         Venue venue;
         if (venueOpt.isEmpty()) {
             Venue newVenue = new Venue();
+            newVenue.setKopisFacilityId(detail.getMt10id());
             newVenue.setName(detail.getFcltynm());
             venue = venueRepository.saveAndFlush(newVenue);
         } else {

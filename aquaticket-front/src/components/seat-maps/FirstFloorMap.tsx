@@ -22,7 +22,6 @@ const FirstFloorMap: React.FC<SeatMapProps> = ({ selectedSeats, handleSeatClick,
             width="30" 
             height="30" 
             rx="4" 
-            onClick={() => handleSeatClick(`1F-G${i}`)}
             className={`${selectedSeats.includes(`1F-G${i}`) ? 'fill-green-500' : 'cursor-pointer'} ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
             onClick={disabled ? undefined : () => handleSeatClick(`1F-G${i}`)}
           />

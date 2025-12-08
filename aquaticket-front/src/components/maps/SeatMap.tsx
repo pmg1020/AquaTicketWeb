@@ -1,57 +1,51 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo } from "react";
 import toast from "react-hot-toast";
-
-interface Seat {
-  id: string;
-  type: "normal" | "wheelchair";
-  x: number;
-  y: number;
-}
+import type { SeatAvailability } from "@/api/booking";
 
 export interface SeatMapProps {
-  zoneId: string; // ✅ 현재 선택된 구역
-  onSeatSelect?: (id: string) => void;
+  zoneId: string;
+  availability: SeatAvailability[];
+  selectedSeats: string[];
+  onSeatSelect: (seatId: string) => void;
   onBack: () => void;
-  onSeatCountChange?: (count: number) => void; // ✅ 좌석 수 카운트용
-  maxSeats?: number; // 최대 선택 가능 좌석 수
+  maxSeats?: number;
 }
 
 const SeatMap: React.FC<SeatMapProps> = ({
   zoneId,
+  availability,
+  selectedSeats,
   onSeatSelect,
   onBack,
-  onSeatCountChange,
-  maxSeats = 2,
 }) => {
-  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const zoneAvailability = useMemo(
+    () => availability.filter((seat) => seat.zone === zoneId),
+    [availability, zoneId]
+  );
 
-  const handleSeatClick = (seat: Seat) => {
-    if (seat.type === "wheelchair") return;
-
-    setSelectedSeats((prev) => {
-      const isSelected = prev.includes(seat.id);
-      if (isSelected) {
-        return prev.filter((id) => id !== seat.id);
-      } else {
-        if (prev.length >= maxSeats) {
-          toast.error(`최대 ${maxSeats}석까지만 선택 가능합니다.`);
-          return prev;
-        }
-        return [...prev, seat.id];
-      }
-    });
-
-    onSeatSelect?.(seat.id);
+  const handleSeatClick = (seat: SeatAvailability) => {
+    if (seat.status !== "AVAILABLE") {
+      toast.error("선택할 수 없는 좌석입니다.");
+      return;
+    }
+    onSeatSelect(String(seat.seatId));
   };
 
-  // ✅ 좌석 선택 수 변경 시 부모에 전달
-  useEffect(() => {
-    onSeatCountChange?.(selectedSeats.length);
-  }, [selectedSeats, onSeatCountChange]);
+  const seatsByRow = useMemo(() => {
+    const grouped: Record<string, SeatAvailability[]> = {};
+    zoneAvailability.forEach((seat) => {
+      if (!grouped[seat.row]) {
+        grouped[seat.row] = [];
+      }
+      grouped[seat.row].push(seat);
+    });
+    return Object.entries(grouped).sort(([rowA], [rowB]) =>
+      rowA.localeCompare(rowB)
+    );
+  }, [zoneAvailability]);
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">
-      {/* 상단: 뒤로가기 + 현재 구역 표시 */}
       <div className="flex items-center gap-4 mb-2">
         <button
           onClick={onBack}
@@ -64,40 +58,42 @@ const SeatMap: React.FC<SeatMapProps> = ({
         </span>
       </div>
 
-      {/* 스테이지 영역 */}
       <div className="stage-area">무대방향 (STAGE)</div>
 
-      {/* 좌석 영역 */}
       <div className="seat-map-container">
-        {[...Array(8)].map((_, rowIndex) => (
-          <div key={rowIndex} className="flex gap-1">
-            {[...Array(20)].map((_, colIndex) => {
-              const seatId = `${rowIndex}-${colIndex}`;
-              const isSelected = selectedSeats.includes(seatId);
-              const baseColor = isSelected ? "#2563eb" : "#ccc";
+        {seatsByRow.map(([row, seats]) => (
+          <div key={row} className="flex items-center gap-2 mb-1">
+            <div className="w-6 text-center text-sm font-bold text-gray-500">{row}</div>
+            <div className="flex gap-1">
+              {seats.map((seat) => {
+                const isSelected = selectedSeats.includes(String(seat.seatId));
+                let color = "#ccc"; // TAKEN
+                if (seat.status === "AVAILABLE") color = "#a0aec0"; // Gray
+                if (isSelected) color = "#2563eb"; // Blue
 
-              return (
-                <div
-                  key={seatId}
-                  onClick={() =>
-                    handleSeatClick({
-                      id: seatId,
-                      type: "normal",
-                      x: 0,
-                      y: 0,
-                    })
-                  }
-                  className="transition-transform hover:scale-110"
-                  style={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: 3,
-                    background: baseColor,
-                    cursor: "pointer",
-                  }}
-                />
-              );
-            })}
+                return (
+                  <div
+                    key={seat.seatId}
+                    onClick={() => handleSeatClick(seat)}
+                    className="transition-transform hover:scale-110"
+                    style={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: 3,
+                      background: color,
+                      cursor: seat.status === "AVAILABLE" ? "pointer" : "not-allowed",
+                      color: "white",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "10px",
+                    }}
+                  >
+                    {seat.number}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         ))}
       </div>

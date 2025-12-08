@@ -33,12 +33,12 @@ export interface HoldResponse {
 }
 
 export async function createHold(payload: HoldRequest): Promise<HoldResponse> {
-  const res = await api.post<HoldResponse>("/api/bookings/hold", payload);
+  const res = await api.post<HoldResponse>("/api/booking/hold", payload);
   return res.data;
 }
 
 export async function releaseHold(holdId: string): Promise<void> {
-  await api.delete(`/api/bookings/hold/${encodeURIComponent(holdId)}`);
+  await api.delete(`/api/booking/hold/${encodeURIComponent(holdId)}`);
 }
 
 export interface ConfirmRequest {
@@ -50,14 +50,14 @@ export interface ConfirmResponse {
 }
 
 export async function confirmBooking(payload: ConfirmRequest): Promise<ConfirmResponse> {
-  const res = await api.post<ConfirmResponse>("/api/bookings/confirm", payload);
+  const res = await api.post<ConfirmResponse>("/api/booking/confirm", payload);
   return res.data;
 }
 
 // src/api/booking.ts
 export async function ensureShowtime(kopisId: string, startAt: string): Promise<number> {
   const res = await api.post<{ showtimeId: number }>(
-    "/api/bookings/showtime/ensure", // ✅ bookings (복수)
+    "/api/booking/showtimes/ensure", // ✅ bookings (복수)
     { kopisId, startAt }
   );
   return res.data.showtimeId;
@@ -75,6 +75,6 @@ export type Booking = {
 };
 
 export async function fetchMyBookings(): Promise<Booking[]> {
-  const res = await api.get<Booking[]>("/api/bookings/me");
+  const res = await api.get<Booking[]>("/api/booking/me");
   return res.data;
 }

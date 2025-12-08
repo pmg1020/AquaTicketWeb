@@ -16,6 +16,9 @@ public class Seat {
     @JoinColumn(name = "venue_id", nullable = false)
     private Venue venue;
 
+    @Column(name = "zone", length = 50)
+    private String zone;
+
     @Column(name = "row_label", length = 10, nullable = false)
     private String rowLabel;
 
