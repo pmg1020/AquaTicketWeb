@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { SeatAvailability } from '@/api/booking';
+import type { KopisPriceItem } from "@/api/kopis.types";
 
 // 공연 정보 타입
 export interface PerformanceInfo {
@@ -23,10 +24,12 @@ interface BookingState {
   totalPrice: number;
   performanceInfo: PerformanceInfo | null;
   selectedCoupon: Coupon | null;
+  priceInfo: KopisPriceItem[]; // ✅ 가격 정보 추가
   setShowtimeId: (showtimeId: number) => void;
   setSelectedSeats: (seats: SeatAvailability[]) => void;
   setPerformanceInfo: (info: PerformanceInfo) => void;
   setSelectedCoupon: (coupon: Coupon | null) => void;
+  setPriceInfo: (prices: KopisPriceItem[]) => void; // ✅ 가격 정보 설정 함수 추가
   clearBooking: () => void;
 }
 
@@ -36,6 +39,7 @@ const useBookingStore = create<BookingState>((set) => ({
   totalPrice: 0,
   performanceInfo: null,
   selectedCoupon: null,
+  priceInfo: [], // ✅ 초기값
   setShowtimeId: (showtimeId) => set({ showtimeId }),
   setSelectedSeats: (seats) => {
     const totalPrice = seats.reduce((acc, seat) => acc + seat.price, 0);
@@ -43,12 +47,14 @@ const useBookingStore = create<BookingState>((set) => ({
   },
   setPerformanceInfo: (info) => set({ performanceInfo: info }),
   setSelectedCoupon: (coupon) => set({ selectedCoupon: coupon }),
+  setPriceInfo: (prices) => set({ priceInfo: prices }), // ✅ 설정 함수 구현
   clearBooking: () => set({
     showtimeId: null,
     selectedSeats: [],
     totalPrice: 0,
     performanceInfo: null,
-    selectedCoupon: null
+    selectedCoupon: null,
+    priceInfo: [], // ✅ 초기화
   }),
 }));
 

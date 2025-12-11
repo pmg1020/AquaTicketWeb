@@ -13,9 +13,7 @@ import {
   type KopisPriceItem,
 } from "@/api/kopis";
 
-
-
-
+import useBookingStore from "@/stores/useBookingStore"; // ✅ Store import
 
 import "@/css/performance-detail.css";
 
@@ -25,6 +23,9 @@ type CalValue = Date | null;
 export default function PerformanceDetail() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+
+  // ✅ Zustand store state
+  const { setPriceInfo, setPerformanceInfo } = useBookingStore();
 
   const [detail, setDetail] = useState<KopisDetailRaw | null>(null);
   const [prices, setPrices] = useState<KopisPriceItem[]>([]);
@@ -45,6 +46,14 @@ export default function PerformanceDetail() {
         if (!alive) return;
         setDetail(d);
         setPrices(p);
+        // ✅ 스토어에 공연 정보와 가격 정보 저장
+        setPerformanceInfo({
+          title: d.prfnm,
+          date: d.prfpdfrom,
+          venue: d.fcltynm,
+          posterUrl: d.poster,
+        });
+        setPriceInfo(p);
       } finally {
         if (alive) setLoading(false);
       }
@@ -53,7 +62,7 @@ export default function PerformanceDetail() {
     return () => {
       alive = false;
     };
-  }, [id]);
+  }, [id, setPerformanceInfo, setPriceInfo]);
 
 
 
@@ -88,6 +97,31 @@ export default function PerformanceDetail() {
     return { minDate: effectiveMinDate, maxDate: toDate };
   }, [detail]);
 
+  // ✅ 가격 표시 및 전달을 위한 데이터 가공
+  const displayPrices = useMemo(() => {
+    if (!prices || prices.length === 0) return [];
+
+    const priceStringToNumber = (s: string) => parseInt(s.replace(/[^\d]/g, ""), 10) || 0;
+
+    const sortedPrices = [...prices]
+      .map(p => ({ ...p, numericPrice: priceStringToNumber(p.price) }))
+      .filter(p => p.numericPrice > 0)
+      .sort((a, b) => b.numericPrice - a.numericPrice);
+
+    if (sortedPrices.length >= 2) {
+      return [
+        { grade: "스탠딩석", price: `${sortedPrices[0].numericPrice.toLocaleString()}원` },
+        { grade: "지정석", price: `${sortedPrices[1].numericPrice.toLocaleString()}원` },
+      ];
+    } else if (sortedPrices.length === 1) {
+      return [
+        { grade: "전석", price: `${sortedPrices[0].numericPrice.toLocaleString()}원` },
+      ];
+    }
+
+    return [];
+  }, [prices]);
+
   if (loading) {
     return (
       <div className="page-detail-wrapper">
@@ -121,6 +155,22 @@ export default function PerformanceDetail() {
       toast.error("로그인이 필요합니다.");
       const currentPath = window.location.pathname + window.location.search;
       navigate(`/login?next=${encodeURIComponent(currentPath)}`);
+      return;
+    }
+
+    // ✅ 예매 페이지로 넘어가기 전에 "단순화된" 가격 정보와 공연 정보를 localStorage에 저장
+    try {
+      localStorage.setItem("temp_price_info", JSON.stringify(displayPrices));
+      const perfInfo = {
+        title: detail.prfnm,
+        date: detail.prfpdfrom,
+        venue: detail.fcltynm,
+        posterUrl: detail.poster,
+      };
+      localStorage.setItem("temp_performance_info", JSON.stringify(perfInfo));
+    } catch (e) {
+      console.error("Failed to save info to localStorage", e);
+      toast.error("예매를 진행할 수 없습니다. 잠시 후 다시 시도해주세요.");
       return;
     }
 
@@ -206,11 +256,11 @@ export default function PerformanceDetail() {
           {/* Col 3: Price & Booking */}
           <div className="triple-col price-pane">
             <h2 className="sectionTitle">좌석 및 가격</h2>
-            {prices.length > 0 && (
+            {displayPrices.length > 0 && (
               <div className="price-panel">
                 <h4 className="price-title">좌석 등급별 가격</h4>
                 <div className="price-rows">
-                  {prices.map((line, i) => (
+                  {displayPrices.map((line, i) => (
                     <div key={i} className={`price-row ${!line.price || line.price.trim() === "0원" ? 'muted' : ''}`}>
                       <span className="grade">{line.grade}</span>
                       <span className="amount">

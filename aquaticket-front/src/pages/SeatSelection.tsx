@@ -6,24 +6,31 @@ import SvgSeatMap from "../components/maps/SvgSeatMap";
 import SeatMap from "../components/maps/SeatMap";
 import CaptchaModal from "../components/modals/CaptchaModal";
 import useBookingStore from "@/stores/useBookingStore";
-import { ensureShowtime, type SeatAvailability } from "@/api/booking"; // fetchAvailability 제거
+import { ensureShowtime, type SeatAvailability } from "@/api/booking";
 import toast from "react-hot-toast";
 import { isAxiosError } from "axios";
 
-import { parseSvgSeatmap } from "../utils/svgSeatParser"; // SVG 파서 임포트
-import svgContent from '../assets/seatmap_demo.svg?raw'; // SVG 파일 내용을 문자열로 임포트
+import { parseSvgSeatmap } from "../utils/svgSeatParser";
+import svgContent from '../assets/seatmap_demo.svg?raw';
 
 import "@/css/maps/base.css";
 import "@/css/maps/layout.css";
 import "@/css/maps/seatmap.css";
 import "@/css/maps/bottom-bar.css";
 
-const MAX_SEATS_PER_PERSON = 2; // 인당 최대 예매 가능 좌석 수
+const MAX_SEATS_PER_PERSON = 2;
 
 const SeatSelection: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { setShowtimeId, setSelectedSeats: setStoreSelectedSeats } = useBookingStore();
+  const {
+    priceInfo,
+    setShowtimeId,
+    setSelectedSeats: setStoreSelectedSeats,
+    setPriceInfo,
+    performanceInfo, // ✅ performanceInfo 추가
+    setPerformanceInfo, // ✅ setPerformanceInfo 추가
+  } = useBookingStore();
 
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [showCaptcha, setShowCaptcha] = useState(true);
@@ -53,13 +60,15 @@ const SeatSelection: React.FC = () => {
 
     const startAt = `${date}T${time}:00`;
 
-    const initialize = async () => {
+    const initialize = async (priceData: any, performanceData: any) => {
       try {
-        setLoading(true);
+        setPriceInfo(priceData); // 현재 창의 스토어에 가격 정보 설정
+        setPerformanceInfo(performanceData); // 현재 창의 스토어에 공연 정보 설정
+
         const showtimeId = await ensureShowtime(kopisId, startAt);
         setShowtimeId(showtimeId);
-        // const seats = await fetchAvailability(showtimeId); // 백엔드 호출 대신 SVG 파서 사용
-        const seats = await parseSvgSeatmap(svgContent);
+
+        const seats = await parseSvgSeatmap(svgContent, priceData);
         setAvailability(seats);
       } catch (err) {
         if (isAxiosError(err) && err.response?.status === 401) {
@@ -74,10 +83,52 @@ const SeatSelection: React.FC = () => {
       }
     };
 
-    initialize();
-  }, [searchParams, setShowtimeId, navigate]);
+    // --- LocalStorage Polling ---
+    let attempts = 0;
+    const maxAttempts = 20; // 20 * 100ms = 2 seconds
+    const interval = setInterval(() => {
+      const storedPriceInfo = localStorage.getItem("temp_price_info");
+      const storedPerformanceInfo = localStorage.getItem("temp_performance_info"); // ✅ 공연 정보도 폴링
+      attempts++;
+
+      if (storedPriceInfo && storedPerformanceInfo) {
+        clearInterval(interval);
+        localStorage.removeItem("temp_price_info");
+        localStorage.removeItem("temp_performance_info"); // ✅ 공연 정보도 제거
+
+        try {
+          const parsedPriceInfo = JSON.parse(storedPriceInfo);
+          const parsedPerformanceInfo = JSON.parse(storedPerformanceInfo); // ✅ 공연 정보 파싱
+          initialize(parsedPriceInfo, parsedPerformanceInfo); // ✅ initialize에 둘 다 전달
+        } catch (e) {
+          setError("정보 파싱에 실패했습니다.");
+          setLoading(false);
+        }
+      } else if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        toast.error("필수 정보를 가져오지 못했습니다. 다시 시도해주세요.");
+        setError("필수 정보가 없습니다.");
+        setLoading(false);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [searchParams, setShowtimeId, setPriceInfo, setPerformanceInfo, navigate]); // ✅ setPerformanceInfo 의존성 추가
 
   const handleCaptchaSuccess = () => setShowCaptcha(false);
+
+  // ✅ 날짜와 시간 포맷팅 헬퍼 함수
+  const formatDateTime = (dateStr: string, timeStr: string) => {
+    const date = new Date(dateStr);
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      weekday: 'short',
+    };
+    const formattedDate = date.toLocaleDateString('ko-KR', options).replace(/\.$/, ''); // "YYYY.MM.DD (요일)"
+    return `${formattedDate} ${timeStr}`;
+  };
 
   const MIN_SCALE = 1.0;
   const MAX_SCALE = 3.0;
@@ -310,9 +361,9 @@ const SeatSelection: React.FC = () => {
               <div className="top-ui-header">
                 <div className="title-area">좌석 선택</div>
                 <div className="info-area">
-                  <span className="concert-title-text">2025 N.Flying LIVE '&CON4 ENCORE : Let's Roll &4...</span>
+                  <span className="concert-title-text">{performanceInfo?.title || "공연 제목"}</span>
                   <select className="time-select">
-                    <option>2025.12.19 (금) 19:30</option>
+                    <option>{performanceInfo?.date && searchParams.get("t") ? formatDateTime(performanceInfo.date, searchParams.get("t")!) : "날짜 및 시간"}</option>
                   </select>
                 </div>
               </div>
@@ -400,38 +451,28 @@ const SeatSelection: React.FC = () => {
                 </div>
 
                 <ul className="sidebar-seat-list">
-                  <li
-                    className="seat-item"
-                    onMouseEnter={() => setHoverType("standing")}
-                    onMouseLeave={() => setHoverType(null)}
-                  >
-                    <div className="seat-item-header">
-                      <div className="seat-item-left">
-                        <span className="color-box standing"></span>
-                        <span>스탠딩석</span>
+                {priceInfo.map((p) => {
+                  const isStanding = p.grade.includes("스탠딩");
+                  return (
+                    <li
+                      key={p.grade}
+                      className="seat-item"
+                      onMouseEnter={() => setHoverType(isStanding ? "standing" : "seat")}
+                      onMouseLeave={() => setHoverType(null)}
+                    >
+                      <div className="seat-item-header">
+                        <div className="seat-item-left">
+                          <span className={`color-box ${isStanding ? "standing" : "seat"}`}></span>
+                          <span>{p.grade}</span>
+                        </div>
+                        <div className="seat-item-right">
+                          <span className="price">{p.price}</span>
+                          <span className="expand-arrow">∨</span>
+                        </div>
                       </div>
-                      <div className="seat-item-right">
-                        <span className="price">132,000원</span>
-                        <span className="expand-arrow">∨</span>
-                      </div>
-                    </div>
-                  </li>
-                  <li
-                    className="seat-item"
-                    onMouseEnter={() => setHoverType("seat")}
-                    onMouseLeave={() => setHoverType(null)}
-                  >
-                    <div className="seat-item-header">
-                      <div className="seat-item-left">
-                        <span className="color-box seat"></span>
-                        <span>지정석</span>
-                      </div>
-                      <div className="seat-item-right">
-                        <span className="price">132,000원</span>
-                        <span className="expand-arrow">∨</span>
-                      </div>
-                    </div>
-                  </li>
+                    </li>
+                  );
+                })}
                 </ul>
 
                 {/* 새로고침 버튼 */}
@@ -458,9 +499,9 @@ const SeatSelection: React.FC = () => {
             <div className="top-ui-header">
               <div className="title-area">좌석 선택</div>
               <div className="info-area">
-                <span className="concert-title-text">2025 N.Flying LIVE '&CON4 ENCORE : Let's Roll &4...</span>
+                <span className="concert-title-text">{performanceInfo?.title || "공연 제목"}</span>
                 <select className="time-select">
-                  <option>2025.12.19 (금) 19:30</option>
+                  <option>{performanceInfo?.date && searchParams.get("t") ? formatDateTime(performanceInfo.date, searchParams.get("t")!) : "날짜 및 시간"}</option>
                 </select>
               </div>
             </div>

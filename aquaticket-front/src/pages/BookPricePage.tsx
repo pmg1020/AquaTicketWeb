@@ -1,8 +1,18 @@
 // src/pages/BookPricePage.tsx
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import useBookingStore from "@/stores/useBookingStore";
 import "../css/book.css";
 
 const BookPricePage: React.FC = () => {
+  const navigate = useNavigate();
+  const { selectedSeats, totalPrice } = useBookingStore();
+
+  const ticketPrice = selectedSeats.length > 0 ? selectedSeats[0].price : 0;
+  const numTickets = selectedSeats.length;
+  const bookingFee = 2000;
+  const finalPrice = totalPrice + bookingFee;
+
   return (
     <div className="book-price-layout">
       {/* 왼쪽: 가격/할인 선택 */}
@@ -10,14 +20,13 @@ const BookPricePage: React.FC = () => {
         <h2>티켓가격을 선택하세요</h2>
         <div className="price-box">
           <div className="row">
-            <span>스탠딩석</span>
-            <span className="right">132,000원</span>
+            <span>{selectedSeats.length > 0 ? selectedSeats[0].zone : '좌석'}</span>
+            <span className="right">{ticketPrice.toLocaleString()}원</span>
           </div>
           <div className="row sub">
             <span>기본가</span>
-            <select>
-              <option>1매 선택</option>
-            </select>
+            {/* 이 부분은 매수 선택 UI로, 현재는 선택된 매수만 보여줍니다. */}
+            <span>{numTickets}매</span>
           </div>
         </div>
 
@@ -36,21 +45,21 @@ const BookPricePage: React.FC = () => {
         <div className="summary-body">
           <div className="summary-row">
             <span>티켓금액</span>
-            <span>132,000원</span>
+            <span>{totalPrice.toLocaleString()}원</span>
           </div>
           <div className="summary-row">
             <span>예매수수료</span>
-            <span>2,000원</span>
+            <span>{bookingFee.toLocaleString()}원</span>
           </div>
           <div className="summary-total">
             <span>총 결제금액</span>
-            <span className="highlight">134,000원</span>
+            <span className="highlight">{finalPrice.toLocaleString()}원</span>
           </div>
         </div>
 
         <div className="summary-footer">
-          <button className="back-btn">이전</button>
-          <button className="next-btn">다음</button>
+          <button className="back-btn" onClick={() => navigate(-1)}>이전</button>
+          <button className="next-btn" onClick={() => navigate("/book/payment")}>다음</button>
         </div>
       </div>
     </div>

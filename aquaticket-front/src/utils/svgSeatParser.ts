@@ -1,22 +1,44 @@
 // aquaticket-front/src/utils/svgSeatParser.ts
-import type { SeatAvailability, SeatStatus } from "@/api/booking";
+import type { SeatAvailability } from "@/api/booking";
+import type { KopisPriceItem } from "@/api/kopis.types";
 
-export async function parseSvgSeatmap(svgContent: string): Promise<SeatAvailability[]> {
+/**
+ * KOPIS API의 가격 문자열 (예: "132,000원")을 숫자(132000)로 변환
+ */
+function parsePriceString(priceStr: string): number {
+  if (!priceStr) return 0;
+  const numericStr = priceStr.replace(/[^\d]/g, "");
+  return parseInt(numericStr, 10) || 0;
+}
+
+export async function parseSvgSeatmap(
+  svgContent: string,
+  priceInfo: KopisPriceItem[] // ✅ API로 받은 단순화된 가격 정보
+): Promise<SeatAvailability[]> {
+  // ✅ 등급별 가격 미리 찾아두기
+  const assignedSeatPriceItem = priceInfo.find(p => p.grade.includes("지정석") || p.grade.includes("전석"));
+  const standingSeatPriceItem = priceInfo.find(p => p.grade.includes("스탠딩석"));
+
+  const assignedPrice = assignedSeatPriceItem ? parsePriceString(assignedSeatPriceItem.price) : 0;
+  const standingPrice = standingSeatPriceItem ? parsePriceString(standingSeatPriceItem.price) : 0;
+  const defaultPrice = assignedPrice || standingPrice;
+
   const parser = new DOMParser();
   const svgDoc = parser.parseFromString(svgContent, "image/svg+xml");
   const seats: SeatAvailability[] = [];
 
   const zoneGroups = svgDoc.querySelectorAll("g[id^='zone-']");
 
-  let globalSeatIdCounter = 1; // Unique ID for each seat, since SVG IDs might not be sequential or suitable
+  let globalSeatIdCounter = 1;
 
   zoneGroups.forEach((zoneGroup) => {
     const zoneId = zoneGroup.id;
-    // const zoneType = zoneGroup.getAttribute("data-zone-type") || "unknown"; // Not directly used by SeatAvailability
-
+    const zoneType = zoneGroup.getAttribute("data-zone-type") || "seat"; // 기본값 'seat'
     const rectElements = zoneGroup.querySelectorAll("rect");
 
-    // Collect unique y coordinates within this zone to determine rows
+    // ✅ Zone 유형에 따라 올바른 가격 할당
+    const priceForZone = zoneType === 'standing' ? standingPrice : assignedPrice;
+
     const uniqueYCoords = new Set<number>();
     rectElements.forEach(rect => {
       const y = parseFloat(rect.getAttribute("y") || "0");
@@ -34,12 +56,12 @@ export async function parseSvgSeatmap(svgContent: string): Promise<SeatAvailabil
       const rowLabel = yCoordToRowLabel.get(yCoord) || "A";
 
       seats.push({
-        seatId: globalSeatIdCounter++, // Use a generated unique ID
+        seatId: globalSeatIdCounter++,
         zone: zoneId,
         row: rowLabel,
-        number: seatNo, // Use data-seat-no as number
-        price: 50000, // Dummy price
-        status: "AVAILABLE", // Default status
+        number: seatNo,
+        price: priceForZone || defaultPrice, // ✅ Zone 가격 우선, 없으면 기본값
+        status: "AVAILABLE",
       });
     });
   });
