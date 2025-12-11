@@ -33,7 +33,7 @@ React, TypeScript, Vite 기반의 프론트엔드 애플리케이션으로, 사�
 -   **`LoginCallback.tsx`**: OAuth2 소셜 로그인 성공 후, 리다이렉트되어 토큰을 받아 처리하는 페이지입니다.
 -   **`RegisterPage.tsx`**: 회원가입 폼을 제공하고, 가입을 처리하는 페이지입니다.
 -   **`MyPage.tsx`**: 사용자의 예매 내역, 쿠폰, 개인 정보 등을 확인할 수 있는 마이페이지의 컨테이너 역할을 합니다.
--   **`SeatSelection.tsx`**: 예매 프로세스의 핵심 페이지입니다. 페이지 초기화 시 `localStorage`에서 단순화된 가격 정보와 **공연 정보(`performanceInfo`)**가 나타날 때까지 주기적으로(polling) 확인하여 안정적으로 읽어옵니다. **페이지 상단의 공연 제목 및 날짜/시간 정보를 `performanceInfo`를 사용하여 동적으로 표시합니다.** 사이드바 UI와 좌석별 가격 모두 이 데이터를 사용하므로, UI(색상, 가격)와 실제 좌석 데이터가 일관성을 유지합니다.
+-   **`SeatSelection.tsx`**: 예매 프로세스의 핵심 페이지입니다. 페이지 초기화 시 `localStorage`에서 단순화된 가격 정보와 **공연 정보(`performanceInfo`)**가 나타날 때까지 주기적으로(polling) 확인하여 안정적으로 읽어옵니다. **`any` 타입 사용을 제거하고 명확한 타입을 지정하여 코드 품질을 개선했습니다.**
 -   **`BookPricePage.tsx`**: 좌석 선택 후 가격을 요약하여 보여주는 페이지입니다. `useBookingStore`에서 선택된 좌석 정보와 총 가격을 가져와 표시합니다.
 -   **`BookPaymentPage.tsx`**: 좌석 선택 후, 가격 확인, 할인 적용 및 최종 결제를 진행하는 페이지입니다. `useBookingStore`에서 가져온 `totalPrice`를 기반으로 결제 금액을 계산하고 표시합니다.
 

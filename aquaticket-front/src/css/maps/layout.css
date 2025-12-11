@@ -125,7 +125,7 @@
   box-sizing: border-box;
   height: 100%;
   gap: 16px;
-  overflow-y: auto;
+  overflow-y: hidden;
   overflow-x: hidden;
 }
 
@@ -235,6 +235,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow-y: auto;   /* 🔥 여기만 스크롤 */
 }
 
 /* ⭐️ 타이틀 래퍼 */
@@ -401,4 +402,48 @@
 .complete-btn.disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ================================
+   우측 패널: 좌석등급 아코디언 (멜론 스타일)
+   ================================ */
+
+.seat-grade-zone-list {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+  /* 🔥 내부 스크롤 제거 */
+  max-height: none;
+  overflow-y: visible;
+}
+
+.seat-grade-zone-list li {
+  list-style: none;
+}
+
+.zone-row {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 7px 14px;
+  font-size: 12px;
+  text-align: left;
+  border: none;
+  background: #ffffff;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.seat-grade-zone-list li + li .zone-row {
+  border-top: 1px solid #f1f5f9;
+}
+
+.zone-row:hover {
+  background: #f8fafc;
+}
+
+.no-zone-text {
+  padding: 8px 12px 10px;
+  font-size: 11px;
+  color: #94a3b8;
 }
