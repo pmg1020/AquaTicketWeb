@@ -181,8 +181,22 @@ export default function PerformanceDetail() {
 
     const seatSelectionUrl = `/book/select-seats?k=${id}&d=${day}&t=${selectedTime}`;
 
-    const windowFeatures = "width=1280,height=800,scrollbars=yes";
-    window.open(seatSelectionUrl, '_blank', windowFeatures);
+    const popupWidth = 990;
+    const popupHeight = 820;
+
+    const left = window.screenX + (window.outerWidth - popupWidth) / 2;
+    const top = window.screenY + (window.outerHeight - popupHeight) / 2;
+
+    const windowFeatures = `
+      width=${popupWidth},
+      height=${popupHeight},
+      left=${left},
+      top=${top},
+      resizable=yes,
+      scrollbars=yes
+    `;
+
+    window.open(seatSelectionUrl, "aquaticket_booking", windowFeatures);
   };
 
   return (
