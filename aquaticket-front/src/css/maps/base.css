@@ -1,46 +1,57 @@
-/* /c:/aquaticket/aquaticket-front/src/css/maps/base.css */
-
 /* ===============================
-🎨 GLOBAL BASE (최종 수정)
+🎨 GLOBAL BASE (안전 버전)
 =============================== */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
+html, body {
+  height: auto;        /* 🔥 전역 페이지 높이 고정 제거 */
+  overflow: auto;      /* 🔥 스크롤 정상 활성화 */
   width: 100%;
-  overflow: hidden; /* ✅ HTML 레벨에 overflow: hidden 강제 */
 }
 
 body {
   font-family: "Pretendard", sans-serif;
   background: #f3f4f6;
   color: #111;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  height: 100%;
-  width: 100vw;
-  overflow: hidden; /* ✅ Body 레벨에 overflow: hidden 강제 */
 }
 
+/* root는 기본 auto로 둔다 */
 #root {
   width: 100%;
+  min-height: 100vh;
+  overflow: visible;
+}
+
+/* ===============================
+🎯 좌석 선택 페이지 전용 글로벌 리셋
+- SeatSelection.tsx에서 .seat-selection-root 래퍼 추가 필요
+=============================== */
+
+.seat-selection-root {
+  height: 100vh;        /* 🔥 여기에서만 전체 화면 고정 */
+  overflow: hidden;     /* 🔥 여기에서만 스크롤 막음 */
+  display: flex;
+  flex-direction: column;
+}
+
+.seat-selection-root body,
+.seat-selection-root html {
   height: 100%;
   overflow: hidden;
+}
+
+/* 개발 편의를 위해 완전 숨김 처리 */
+.hidden {
+  display: none !important;
 }
 
 button {
   cursor: pointer;
   border: none;
   outline: none;
-}
-
-.hidden {
-  display: none !important;
 }

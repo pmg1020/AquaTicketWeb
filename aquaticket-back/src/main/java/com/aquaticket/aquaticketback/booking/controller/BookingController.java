@@ -4,7 +4,6 @@ package com.aquaticket.aquaticketback.booking.controller;
 import com.aquaticket.aquaticketback.booking.dto.BookingHistoryDto;
 import com.aquaticket.aquaticketback.booking.dto.EnsureShowtimeRequest;
 import com.aquaticket.aquaticketback.booking.dto.EnsureShowtimeResponse;
-import com.aquaticket.aquaticketback.booking.dto.ConfirmResponse;
 import com.aquaticket.aquaticketback.booking.service.BookingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

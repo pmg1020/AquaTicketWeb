@@ -11,7 +11,6 @@ import {
 } from "@/api/booking";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
-import "@/css/book.css";
 import { TOKEN_KEY } from "@/api/axiosInstance";
 
 type ZoneGroup = {

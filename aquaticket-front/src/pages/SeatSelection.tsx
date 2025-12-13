@@ -64,7 +64,10 @@ const SeatSelection: React.FC = () => {
 
     const startAt = `${date}T${time}:00`;
 
-    const initialize = async (priceData: KopisPriceItem[], performanceData: PerformanceInfo) => {
+    const initialize = async (
+      priceData: KopisPriceItem[],
+      performanceData: PerformanceInfo
+    ) => {
       try {
         setPriceInfo(priceData);
         setPerformanceInfo(performanceData);
@@ -391,17 +394,244 @@ const SeatSelection: React.FC = () => {
     navigate("/book/payment");
   };
 
+  // 로딩/에러도 seat-selection-root 안에서 렌더링
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="seat-selection-root">
+        <div>Loading...</div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <div className="seat-selection-root">
+        <div>{error}</div>
+      </div>
+    );
   }
 
   // ---------- 메인 좌석도 (zone 미선택) ----------
   if (!selectedZone) {
     return (
+      <div className="seat-selection-root">
+        <div className="seat-selection-page relative overflow-hidden w-screen flex flex-col h-screen">
+          {showCaptcha && <CaptchaModal onSuccess={handleCaptchaSuccess} />}
+          <div
+            className={
+              showCaptcha
+                ? "pointer-events-none blur-sm brightness-90 flex flex-col h-full"
+                : "flex flex-col h-full"
+            }
+          >
+            <div className="seatmap-container">
+              <div className="seatmap-left">
+                <div className="top-ui-header">
+                  <div className="title-area">좌석 선택</div>
+                  <div className="info-area">
+                    <span className="concert-title-text">
+                      {performanceInfo?.title || "공연 제목"}
+                    </span>
+                    <select className="time-select">
+                      <option>
+                        {performanceInfo?.date && searchParams.get("t")
+                          ? formatDateTime(
+                              performanceInfo.date,
+                              searchParams.get("t")!
+                            )
+                          : "날짜 및 시간"}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <SvgSeatMap
+                  onZoneSelect={(zoneId) => setSelectedZone(zoneId)}
+                  hoverType={hoverType}
+                />
+
+                <div
+                  className={`seat-info-bar ${isExpanded ? "expanded" : ""}`}
+                  onClick={toggleBar}
+                >
+                  <div className="seat-info-header">
+                    <span>
+                      구역을 먼저 선택해주세요{" "}
+                      <span className="sub-text">
+                        (1인 최대 {MAX_SEATS_PER_PERSON}매 선택 가능)
+                      </span>
+                    </span>
+                    <button className="toggle-btn">∧</button>
+                  </div>
+
+                  <div className="seat-info-content">
+                    {selectedSeats.length > 0 ? (
+                      availability
+                        .filter((seat) =>
+                          selectedSeats.includes(String(seat.seatId))
+                        )
+                        .map((seat) => (
+                          <div key={seat.seatId} className="seat-detail">
+                            {seat.zone} / {seat.row}열 {seat.number}번
+                          </div>
+                        ))
+                    ) : (
+                      <p className="empty-text">선택된 좌석이 없습니다.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* ---------- 우측 패널 ---------- */}
+              <aside className="seat-sidebar">
+                <div className="sidebar-logo">Aqua Ticket</div>
+
+                <div className="sidebar-mini-map">
+                  <div className="mini-map-controls">
+                    <button
+                      className="zoom-btn"
+                      onClick={() => handleZoom("in")}
+                    >
+                      +
+                    </button>
+                    <button
+                      className="zoom-btn"
+                      onClick={() => handleZoom("out")}
+                    >
+                      −
+                    </button>
+                  </div>
+                  <div
+                    className="mini-map-wrapper"
+                    ref={miniMapRef}
+                    onWheel={handleWheel}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                    style={{
+                      cursor:
+                        miniMapScale > MIN_SCALE
+                          ? isDragging
+                            ? "grabbing"
+                            : "grab"
+                          : "default",
+                    }}
+                  >
+                    <div
+                      style={{
+                        transform: `translate(${miniMapTransform.x}px, ${miniMapTransform.y}px) scale(${miniMapScale})`,
+                        transformOrigin: "0 0",
+                        transition: isDragging ? "none" : "transform 0.1s ease",
+                        pointerEvents: isDragging ? "none" : "auto",
+                      }}
+                    >
+                      <SvgSeatMap
+                        onZoneSelect={(zoneId) => setSelectedZone(zoneId)}
+                        isMiniMap={true}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <button className="view-full-map-btn">
+                  좌석도 전체보기 ›
+                </button>
+
+                {/* ---------- 좌석등급/잔여석 & 아코디언 ---------- */}
+                <div className="sidebar-section">
+                  <div className="sidebar-title-wrapper">
+                    <h3 className="sidebar-title">좌석등급/잔여석</h3>
+                    <button className="info-icon">ⓘ</button>
+                  </div>
+
+                  <ul className="sidebar-seat-list">
+                    {priceInfo.map((p) => {
+                      const isStanding = p.grade.includes("스탠딩");
+                      const zones = getZonesForGrade(p.grade);
+                      const opened = expandedGrade === p.grade;
+
+                      return (
+                        <li
+                          key={p.grade}
+                          className={`seat-item ${opened ? "opened" : ""}`}
+                          onMouseEnter={() =>
+                            setHoverType(isStanding ? "standing" : "seat")
+                          }
+                          onMouseLeave={() => setHoverType(null)}
+                        >
+                          <button
+                            type="button"
+                            className="seat-item-header"
+                            onClick={() => handleGradeClick(p.grade)}
+                          >
+                            <div className="seat-item-left">
+                              <span
+                                className={`color-box ${
+                                  isStanding ? "standing" : "seat"
+                                }`}
+                              ></span>
+                              <span>{p.grade}</span>
+                            </div>
+                            <div className="seat-item-right">
+                              <span className="price">{p.price}</span>
+                              <span
+                                className={`expand-arrow ${
+                                  opened ? "open" : ""
+                                }`}
+                              >
+                                ∨
+                              </span>
+                            </div>
+                          </button>
+
+                          {opened && zones.length > 0 && (
+                            <ul className="seat-grade-zone-list">
+                              {zones.map((zoneId) => (
+                                <li key={zoneId}>
+                                  <button
+                                    type="button"
+                                    className="zone-row"
+                                    onClick={() => setSelectedZone(zoneId)}
+                                  >
+                                    {getZoneLabel(zoneId)}
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+
+                          {opened && zones.length === 0 && (
+                            <p className="no-zone-text">
+                              이 등급에 해당하는 구역이 없습니다.
+                            </p>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+
+                  <button className="refresh-btn">새로고침</button>
+                </div>
+
+                <button
+                  className="sidebar-btn"
+                  onClick={handleCompleteSelection}
+                  disabled={selectedSeats.length === 0}
+                >
+                  좌석 선택 완료
+                </button>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------- 상세 좌석도 (zone 선택 후) ----------
+  return (
+    <div className="seat-selection-root">
       <div className="seat-selection-page relative overflow-hidden w-screen flex flex-col h-screen">
         {showCaptcha && <CaptchaModal onSuccess={handleCaptchaSuccess} />}
         <div
@@ -423,31 +653,42 @@ const SeatSelection: React.FC = () => {
                     <option>
                       {performanceInfo?.date && searchParams.get("t")
                         ? formatDateTime(
-                          performanceInfo.date,
-                          searchParams.get("t")!
-                        )
+                            performanceInfo.date,
+                            searchParams.get("t")!
+                          )
                         : "날짜 및 시간"}
                     </option>
                   </select>
                 </div>
               </div>
 
-              <SvgSeatMap
-                onZoneSelect={(zoneId) => setSelectedZone(zoneId)}
-                hoverType={hoverType}
+              <SeatMap
+                zoneId={selectedZone}
+                onBack={() => setSelectedZone(null)}
+                maxSeats={MAX_SEATS_PER_PERSON}
+                availability={availability}
+                selectedSeats={selectedSeats}
+                onSeatSelect={handleSeatSelect}
               />
 
               <div
                 className={`seat-info-bar ${isExpanded ? "expanded" : ""}`}
-                onClick={toggleBar}
+                onClick={() => setIsExpanded((p) => !p)}
               >
                 <div className="seat-info-header">
-                  <span>
-                    구역을 먼저 선택해주세요{" "}
-                    <span className="sub-text">
-                      (1인 최대 {MAX_SEATS_PER_PERSON}매 선택 가능)
+                  {selectedSeats.length > 0 ? (
+                    <span>
+                      선택한 좌석 총{" "}
+                      <span className="highlight">
+                        {selectedSeats.length}석
+                      </span>
+                      이 선택되었습니다.
                     </span>
-                  </span>
+                  ) : (
+                    <span>
+                      좌석을 선택해주세요. (1인 최대 {MAX_SEATS_PER_PERSON}매)
+                    </span>
+                  )}
                   <button className="toggle-btn">∧</button>
                 </div>
 
@@ -458,12 +699,8 @@ const SeatSelection: React.FC = () => {
                         selectedSeats.includes(String(seat.seatId))
                       )
                       .map((seat) => (
-                        <div
-                          key={seat.seatId}
-                          className="seat-detail"
-                        >
-                          {seat.zone} / {seat.row}열{" "}
-                          {seat.number}번
+                        <div key={seat.seatId} className="seat-detail">
+                          {seat.zone} / {seat.row}열 {seat.number}번
                         </div>
                       ))
                   ) : (
@@ -473,257 +710,33 @@ const SeatSelection: React.FC = () => {
               </div>
             </div>
 
-            {/* ---------- 우측 패널 ---------- */}
             <aside className="seat-sidebar">
-              <div className="sidebar-logo">Aqua Ticket</div>
+              <div className="sidebar-body">
+                <h3 className="sidebar-title">현재 구역: {selectedZone}</h3>
+                <p>
+                  선택한 좌석: <b>{selectedSeats.length}</b>석
+                </p>
+              </div>
 
-              <div className="sidebar-mini-map">
-                <div className="mini-map-controls">
-                  <button
-                    className="zoom-btn"
-                    onClick={() => handleZoom("in")}
-                  >
-                    +
-                  </button>
-                  <button
-                    className="zoom-btn"
-                    onClick={() => handleZoom("out")}
-                  >
-                    −
-                  </button>
-                </div>
-                <div
-                  className="mini-map-wrapper"
-                  ref={miniMapRef}
-                  onWheel={handleWheel}
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseUp}
-                  style={{
-                    cursor:
-                      miniMapScale > MIN_SCALE
-                        ? isDragging
-                          ? "grabbing"
-                          : "grab"
-                        : "default",
-                  }}
+              <div className="sidebar-footer">
+                <button
+                  className={`complete-btn ${
+                    !selectedSeats.length ? "disabled" : ""
+                  }`}
+                  disabled={!selectedSeats.length}
+                  onClick={handleCompleteSelection}
                 >
-                  <div
-                    style={{
-                      transform: `translate(${miniMapTransform.x}px, ${miniMapTransform.y}px) scale(${miniMapScale})`,
-                      transformOrigin: "0 0",
-                      transition: isDragging ? "none" : "transform 0.1s ease",
-                      pointerEvents: isDragging ? "none" : "auto",
-                    }}
-                  >
-                    <SvgSeatMap
-                      onZoneSelect={(zoneId) => setSelectedZone(zoneId)}
-                      isMiniMap={true}
-                    />
-                  </div>
-                </div>
+                  좌석 선택 완료
+                </button>
+                <button
+                  className="back-btn"
+                  onClick={() => setSelectedZone(null)}
+                >
+                  ← 구역으로 돌아가기
+                </button>
               </div>
-
-              <button className="view-full-map-btn">
-                좌석도 전체보기 ›
-              </button>
-
-              {/* ---------- 좌석등급/잔여석 & 아코디언 ---------- */}
-              <div className="sidebar-section">
-                <div className="sidebar-title-wrapper">
-                  <h3 className="sidebar-title">좌석등급/잔여석</h3>
-                  <button className="info-icon">ⓘ</button>
-                </div>
-
-                <ul className="sidebar-seat-list">
-                  {priceInfo.map((p) => {
-                    const isStanding = p.grade.includes("스탠딩");
-                    const zones = getZonesForGrade(p.grade);
-                    const opened = expandedGrade === p.grade;
-
-                    return (
-                      <li
-                        key={p.grade}
-                        className={`seat-item ${opened ? "opened" : ""}`}
-                        onMouseEnter={() =>
-                          setHoverType(isStanding ? "standing" : "seat")
-                        }
-                        onMouseLeave={() => setHoverType(null)}
-                      >
-                        <button
-                          type="button"
-                          className="seat-item-header"
-                          onClick={() => handleGradeClick(p.grade)}
-                        >
-                          <div className="seat-item-left">
-                            <span
-                              className={`color-box ${isStanding ? "standing" : "seat"
-                                }`}
-                            ></span>
-                            <span>{p.grade}</span>
-                          </div>
-                          <div className="seat-item-right">
-                            <span className="price">{p.price}</span>
-                            <span
-                              className={`expand-arrow ${opened ? "open" : ""
-                                }`}
-                            >
-                              ∨
-                            </span>
-                          </div>
-                        </button>
-
-                        {opened && zones.length > 0 && (
-                          <ul className="seat-grade-zone-list">
-                            {zones.map((zoneId) => (
-                              <li key={zoneId}>
-                                <button
-                                  type="button"
-                                  className="zone-row"
-                                  onClick={() => setSelectedZone(zoneId)}
-                                >
-                                  {getZoneLabel(zoneId)}
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-
-                        {opened && zones.length === 0 && (
-                          <p className="no-zone-text">이 등급에 해당하는 구역이 없습니다.</p>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-
-                <button className="refresh-btn">새로고침</button>
-              </div>
-
-              <button
-                className="sidebar-btn"
-                onClick={handleCompleteSelection}
-                disabled={selectedSeats.length === 0}
-              >
-                좌석 선택 완료
-              </button>
             </aside>
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ---------- 상세 좌석도 (zone 선택 후) ----------
-  return (
-    <div className="seat-selection-page relative overflow-hidden w-screen flex flex-col h-screen">
-      {showCaptcha && <CaptchaModal onSuccess={handleCaptchaSuccess} />}
-      <div
-        className={
-          showCaptcha
-            ? "pointer-events-none blur-sm brightness-90 flex flex-col h-full"
-            : "flex flex-col h-full"
-        }
-      >
-        <div className="seatmap-container">
-          <div className="seatmap-left">
-            <div className="top-ui-header">
-              <div className="title-area">좌석 선택</div>
-              <div className="info-area">
-                <span className="concert-title-text">
-                  {performanceInfo?.title || "공연 제목"}
-                </span>
-                <select className="time-select">
-                  <option>
-                    {performanceInfo?.date && searchParams.get("t")
-                      ? formatDateTime(
-                        performanceInfo.date,
-                        searchParams.get("t")!
-                      )
-                      : "날짜 및 시간"}
-                  </option>
-                </select>
-              </div>
-            </div>
-
-            <SeatMap
-              zoneId={selectedZone}
-              onBack={() => setSelectedZone(null)}
-              maxSeats={MAX_SEATS_PER_PERSON}
-              availability={availability}
-              selectedSeats={selectedSeats}
-              onSeatSelect={handleSeatSelect}
-            />
-
-            <div
-              className={`seat-info-bar ${isExpanded ? "expanded" : ""}`}
-              onClick={() => setIsExpanded((p) => !p)}
-            >
-              <div className="seat-info-header">
-                {selectedSeats.length > 0 ? (
-                  <span>
-                    선택한 좌석 총{" "}
-                    <span className="highlight">
-                      {selectedSeats.length}석
-                    </span>
-                    이 선택되었습니다.
-                  </span>
-                ) : (
-                  <span>
-                    좌석을 선택해주세요. (1인 최대 {MAX_SEATS_PER_PERSON}매)
-                  </span>
-                )}
-                <button className="toggle-btn">∧</button>
-              </div>
-
-              <div className="seat-info-content">
-                {selectedSeats.length > 0 ? (
-                  availability
-                    .filter((seat) =>
-                      selectedSeats.includes(String(seat.seatId))
-                    )
-                    .map((seat) => (
-                      <div
-                        key={seat.seatId}
-                        className="seat-detail"
-                      >
-                        {seat.zone} / {seat.row}열{" "}
-                        {seat.number}번
-                      </div>
-                    ))
-                ) : (
-                  <p className="empty-text">선택된 좌석이 없습니다.</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <aside className="seat-sidebar">
-            <div className="sidebar-body">
-              <h3 className="sidebar-title">현재 구역: {selectedZone}</h3>
-              <p>
-                선택한 좌석: <b>{selectedSeats.length}</b>석
-              </p>
-            </div>
-
-            <div className="sidebar-footer">
-              <button
-                className={`complete-btn ${!selectedSeats.length ? "disabled" : ""
-                  }`}
-                disabled={!selectedSeats.length}
-                onClick={handleCompleteSelection}
-              >
-                좌석 선택 완료
-              </button>
-              <button
-                className="back-btn"
-                onClick={() => setSelectedZone(null)}
-              >
-                ← 구역으로 돌아가기
-              </button>
-            </div>
-          </aside>
         </div>
       </div>
     </div>

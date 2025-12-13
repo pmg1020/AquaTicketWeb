@@ -7,7 +7,6 @@
   max-width: none; /* max-width 제거하여 잔여 마진 간섭 해소 */
   overflow: visible !important; /* Sticky 무력화 방지 최종 강제 */
   min-height: 100vh; /* Sticky가 작동할 최소 높이 보장 */
-  text-align: center; /* 원래 있던 속성 유지 */
 }
 
 .logo {

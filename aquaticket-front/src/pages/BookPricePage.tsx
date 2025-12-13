@@ -2,7 +2,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import useBookingStore from "@/stores/useBookingStore";
-import "../css/book.css";
 
 const BookPricePage: React.FC = () => {
   const navigate = useNavigate();
