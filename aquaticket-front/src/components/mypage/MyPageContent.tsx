@@ -16,7 +16,7 @@ const Card = ({ children }: { children: React.ReactNode }) => (
 
 const EmptyBox = ({ title, desc }: { title: string; desc: string }) => (
   <Card>
-    <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+    <div className="px-6 py-4 border-b border-gray-200 bg-white">
       <h2 className="text-[15px] font-bold text-gray-900">{title}</h2>
     </div>
     <div className="p-8 text-center text-[13px] text-gray-600">{desc}</div>

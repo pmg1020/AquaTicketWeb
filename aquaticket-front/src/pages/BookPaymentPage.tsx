@@ -172,7 +172,7 @@ const BookPaymentPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* ========== 헤더 ========== */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-[1400px] mx-auto px-6 py-5">
@@ -180,13 +180,13 @@ const BookPaymentPage: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-900">예매 진행</h1>
             <div className="flex items-center gap-3">
               <div className={`px-5 py-2 rounded-full text-sm font-bold ${
-                step === 1 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                step === 1 ? 'bg-green-100 text-green-700' : 'bg-white text-gray-500'
               }`}>
                 STEP 1 · 가격 선택
               </div>
               <div className="w-8 h-px bg-gray-300"></div>
               <div className={`px-5 py-2 rounded-full text-sm font-bold ${
-                step === 2 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                step === 2 ? 'bg-green-100 text-green-700' : 'bg-white text-gray-500'
               }`}>
                 STEP 2 · 배송/결제
               </div>
@@ -227,7 +227,7 @@ const BookPaymentPage: React.FC = () => {
                 {/* 날짜 및 회차 */}
                 <section className="bg-white rounded-lg p-5 border border-gray-200">
                   <h3 className="text-base font-bold text-gray-900 mb-4">날짜 및 회차 확인</h3>
-                  <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+                  <div className="bg-white rounded-lg p-5 border border-gray-200">
                     <p className="text-sm font-semibold text-gray-900">{performanceInfo?.date || "날짜 정보 없음"}</p>
                     <p className="text-xs text-gray-500 mt-1.5">총 1석 선택</p>
                   </div>
@@ -236,7 +236,7 @@ const BookPaymentPage: React.FC = () => {
                 {/* 할인 쿠폰 */}
                 <section className="bg-white rounded-lg p-5 border border-gray-200">
                   <h3 className="text-base font-bold text-gray-900 mb-4">할인쿠폰을 선택하세요</h3>
-                  <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+                  <div className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-gray-700">쿠폰</span>
                       <span className="text-sm font-bold text-green-600">{availableCoupons.length}개</span>
@@ -277,7 +277,7 @@ const BookPaymentPage: React.FC = () => {
                 {/* 공연 예매권 */}
                 <section className="bg-white rounded-lg p-5 border border-gray-200">
                   <h3 className="text-base font-bold text-gray-900 mb-4">공연 예매권</h3>
-                  <div className="bg-gray-50 rounded-lg p-5 text-center border border-gray-200">
+                  <div className="bg-white rounded-lg p-5 text-center border border-gray-200">
                     <p className="text-sm text-gray-500">사용 가능한 예매권: 0개</p>
                   </div>
                 </section>
@@ -334,7 +334,7 @@ const BookPaymentPage: React.FC = () => {
                         type="text"
                         value={user?.name || ""}
                         readOnly
-                        className="h-10 px-3 border border-gray-300 rounded-lg bg-gray-50 text-sm"
+                        className="h-10 px-3 border border-gray-300 rounded-lg bg-white text-sm"
                       />
                     </div>
                     <div className="grid grid-cols-[100px_1fr] items-center gap-4">
@@ -353,7 +353,7 @@ const BookPaymentPage: React.FC = () => {
                         type="text"
                         value={user?.email || ""}
                         readOnly
-                        className="h-10 px-3 border border-gray-300 rounded-lg bg-gray-50 text-sm"
+                        className="h-10 px-3 border border-gray-300 rounded-lg bg-white text-sm"
                       />
                     </div>
                   </div>
@@ -438,7 +438,7 @@ const BookPaymentPage: React.FC = () => {
                     </label>
 
                     <div className="border border-gray-200 rounded-lg overflow-hidden text-sm">
-                      <div className="grid grid-cols-2 bg-gray-50 border-b">
+                      <div className="grid grid-cols-2 bg-white border-b">
                         <div className="px-4 py-2.5 font-semibold">취소일</div>
                         <div className="px-4 py-2.5 font-semibold">취소수수료</div>
                       </div>
@@ -474,7 +474,7 @@ const BookPaymentPage: React.FC = () => {
           {/* ========== 오른쪽: 결제 요약 ========== */}
           <div className="w-[380px] shrink-0 space-y-3">
             {/* 공연 정보 박스 */}
-            <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <div className="bg-white rounded-lg p-5 border border-gray-200">
               <h2 className="text-base font-bold text-gray-900 leading-tight">
                 {performanceInfo?.title || "공연 정보 없음"}
               </h2>
@@ -574,7 +574,7 @@ const BookPaymentPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handlePrev}
-                  className="h-11 rounded-lg border-2 border-gray-300 bg-white hover:bg-gray-50 text-sm font-semibold transition shadow-sm"
+                  className="h-11 rounded-lg border-2 border-gray-300 bg-white hover:bg-gray-100 text-sm font-semibold transition shadow-sm"
                 >
                   이전
                 </button>
@@ -592,7 +592,7 @@ const BookPaymentPage: React.FC = () => {
                     type="button"
                     onClick={handlePayment}
                     disabled={loading}
-                    className="h-11 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-400 text-sm font-bold transition shadow-sm"
+                    className="h-11 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-50 text-sm font-bold transition shadow-sm"
                   >
                     {loading ? "처리중..." : "결제하기"}
                   </button>

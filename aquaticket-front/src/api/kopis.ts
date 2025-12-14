@@ -22,10 +22,15 @@ export async function fetchPerformances(
   stdate: string,
   eddate: string,
   cpage = "1",
-  rows = "50"
+  rows = "50",
+  shprfnm?: string
 ): Promise<KopisListItem[]> {
+  const params: any = { stdate, eddate, cpage, rows };
+  if (shprfnm) {
+    params.shprfnm = shprfnm;
+  }
   const { data } = await http.get<KopisListItem[]>("/kopis/pblprfr", {
-    params: { stdate, eddate, cpage, rows },
+    params,
   });
   return Array.isArray(data) ? data : [];
 }

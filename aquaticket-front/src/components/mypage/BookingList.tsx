@@ -5,7 +5,7 @@ import axios from "axios";
 
 function StatusBadge({ status }: { status: string }) {
   const s = (status || "").toUpperCase();
-  let cls = "bg-gray-100 text-gray-700";
+  let cls = "bg-white text-gray-700";
 
   if (s.includes("CONFIRM") || s.includes("PAID") || s.includes("COMPLETE")) {
     cls = "bg-emerald-100 text-emerald-700";
@@ -65,7 +65,7 @@ const BookingList = () => {
   return (
     <section className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       {/* 헤더 */}
-      <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 bg-gray-50">
+      <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 bg-white">
         <h2 className="text-[15px] font-bold text-gray-900">최근 예매/취소</h2>
         <button
           type="button"
@@ -114,7 +114,7 @@ const BookingList = () => {
               return (
                 <div
                   key={b.bookingId}
-                  className={`border border-gray-200 rounded-lg p-3 hover:border-emerald-500 hover:shadow-md transition-all duration-200 ${isCancelled ? 'bg-gray-50 opacity-70' : ''}`}
+                  className={`border border-gray-200 rounded-lg p-3 hover:border-emerald-500 hover:shadow-md transition-all duration-200 ${isCancelled ? 'bg-gray-100 opacity-70' : ''}`}
                 >
                   <div className="flex gap-3">
                     {/* 포스터 */}
@@ -160,7 +160,7 @@ const BookingList = () => {
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           type="button"
-                          className="w-full rounded border border-gray-300 bg-white px-3 py-1.5 text-[12px] font-medium text-gray-700 hover:bg-gray-50 transition"
+                          className="w-full rounded border border-gray-300 bg-white px-3 py-1.5 text-[12px] font-medium text-gray-700 hover:bg-gray-100 transition"
                         >
                           예매 상세
                         </button>
@@ -168,7 +168,7 @@ const BookingList = () => {
                           type="button"
                           onClick={() => handleCancel(b.bookingId)}
                           disabled={isCancelled}
-                          className="w-full rounded border border-gray-300 bg-white px-3 py-1.5 text-[12px] font-medium text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition"
+                          className="w-full rounded border border-gray-300 bg-white px-3 py-1.5 text-[12px] font-medium text-gray-700 hover:bg-gray-100 disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition"
                         >
                           {isCancelled ? '취소 완료' : '예매 취소'}
                         </button>

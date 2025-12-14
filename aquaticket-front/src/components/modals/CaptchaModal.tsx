@@ -88,14 +88,14 @@ export default function CaptchaModal({ onSuccess }: CaptchaModalProps) {
 
           {/* 캡차 영역 */}
           <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="bg-gray-100 rounded-md px-5 py-2 select-none shadow-inner border border-gray-200">
+            <div className="bg-white rounded-md px-5 py-2 select-none shadow-inner border border-gray-200">
               <p className="text-3xl font-bold tracking-widest text-gray-800">
                 {captchaText}
               </p>
             </div>
             <button
               onClick={() => setCaptchaText(generateCaptcha())}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 transition"
               title="새로고침"
             >
               ↻

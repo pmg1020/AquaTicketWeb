@@ -19,7 +19,7 @@ export default function UserInfo() {
       try {
         const userData = await fetchMe();
         setUser(userData);
-        
+
         const bookingsData = await fetchMyBookings();
         setBookingCount(bookingsData.length);
       } catch (error) {

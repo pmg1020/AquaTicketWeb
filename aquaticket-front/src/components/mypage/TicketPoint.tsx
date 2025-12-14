@@ -1,7 +1,7 @@
 const TicketPoint = () => {
   return (
     <section className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <div className="px-5 py-4 bg-gray-50 border-b border-gray-200">
+      <div className="px-5 py-4 bg-white border-b border-gray-200">
         <h2 className="text-[15px] font-bold text-gray-900">티켓포인트</h2>
       </div>
 

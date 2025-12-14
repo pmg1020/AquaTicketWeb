@@ -54,7 +54,7 @@ export default function BookGate() {
         <p className="text-gray-600 text-sm mb-4">부정예매 방지를 위해 보안문자를 입력해주세요.</p>
         
         {/* Captcha text styled like an image box */}
-        <div className="bg-gray-100 rounded-md p-2 my-3">
+        <div className="bg-white rounded-md p-2 my-3">
           <p className="text-3xl font-bold tracking-widest select-none">{captchaText}</p>
         </div>
 

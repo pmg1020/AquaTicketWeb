@@ -12,6 +12,7 @@ export default function Header() {
 
   const [me, setMe] = useState<Me | null>(null);
   const [loadingMe, setLoadingMe] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // ... (헤더 높이/스크롤 useEffect 그대로)
 
@@ -34,6 +35,14 @@ export default function Header() {
       }
     })();
   }, [pathname]);
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const trimmedQuery = searchQuery.trim();
+    if (trimmedQuery) {
+      navigate(`/search?q=${encodeURIComponent(trimmedQuery)}`);
+    }
+  };
 
   const handleClickLogin = () => navigate("/login");
 
@@ -65,8 +74,12 @@ export default function Header() {
           <span className="logo-aqua">Aqua</span>Ticket
         </Link>
 
-        <form className="search" onSubmit={(e) => e.preventDefault()}>
-          <input placeholder="공연, 전시, 소공연 등 검색" />
+        <form className="search" onSubmit={handleSearchSubmit}>
+          <input 
+            placeholder="공연, 전시, 소공연 등 검색"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
           <button type="submit">🔍</button>
         </form>
 

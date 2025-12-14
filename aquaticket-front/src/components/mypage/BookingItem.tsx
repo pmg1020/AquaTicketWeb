@@ -16,7 +16,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 
   return (
     <Link to={`/mypage/bookings/${booking.bookingId}`} className="block">
-      <div className="rounded-lg px-4 py-4 hover:bg-gray-50/60 transition">
+      <div className="rounded-lg px-4 py-4 hover:bg-gray-100/60 transition">
         <div className="flex gap-4">
           <img
             src={booking.posterUrl}
@@ -28,7 +28,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
               <h3 className="text-base font-bold text-gray-900 truncate">
                 {booking.performanceTitle}
               </h3>
-              <span className="shrink-0 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">
+              <span className="shrink-0 inline-flex items-center rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-700">
                 {booking.status}
               </span>
             </div>

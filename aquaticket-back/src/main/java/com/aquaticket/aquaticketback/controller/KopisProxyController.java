@@ -33,15 +33,21 @@ public class KopisProxyController {
             @RequestParam(defaultValue = "20230101") String stdate,
             @RequestParam(defaultValue = "20230630") String eddate,
             @RequestParam(defaultValue = "1") String cpage,
-            @RequestParam(defaultValue = "12") String rows
+            @RequestParam(defaultValue = "12") String rows,
+            @RequestParam(required = false) String shprfnm // 검색어
     ) {
-        String url = UriComponentsBuilder.fromUriString(KOPIS_API_BASE_URL + "/pblprfr")
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(KOPIS_API_BASE_URL + "/pblprfr")
                 .queryParam("service", kopisServiceKey)
                 .queryParam("stdate", stdate)
                 .queryParam("eddate", eddate)
                 .queryParam("cpage", cpage)
-                .queryParam("rows", rows)
-                .build().toUriString();
+                .queryParam("rows", rows);
+
+        if (shprfnm != null && !shprfnm.isBlank()) {
+            builder.queryParam("shprfnm", shprfnm);
+        }
+
+        String url = builder.build().toUriString();
 
         try {
             RestTemplate rt = new RestTemplate();

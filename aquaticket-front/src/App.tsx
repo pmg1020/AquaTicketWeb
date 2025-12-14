@@ -13,6 +13,7 @@ import RegisterPage from "@/pages/RegisterPage";
 import { Toaster } from "react-hot-toast";
 import BookPage from "@/pages/BookPage";
 import SeatSelection from "@/pages/SeatSelection";
+import SearchPage from "@/pages/SearchPage";
 
 // ✅ 새로 추가된 페이지
 import BookPricePage from "@/pages/BookPricePage";
@@ -81,6 +82,7 @@ export default function App() {
         <Route path="/performances" element={<PerformanceList />} />
         <Route path="/performances/:id" element={<PerformanceDetail />} />
         <Route path="/genre/:slug" element={<CategoryList />} />
+        <Route path="/search" element={<SearchPage />} />
 
         {/* 로그인 / 회원가입 */}
         <Route path="/login" element={<LoginPage />} />
