@@ -97,9 +97,6 @@ export default function Header() {
         <NavLink to="/genre/concert">콘서트</NavLink>
         <NavLink to="/genre/musical">뮤지컬/연극</NavLink>
         <NavLink to="/genre/classic">클래식/오페라</NavLink>
-        <NavLink to="/genre/expo">전시/행사</NavLink>
-        <NavLink to="/genre/kids">아동/가족</NavLink>
-        <NavLink to="/genre/festival">축제</NavLink>
       </nav>
     </header>
   );

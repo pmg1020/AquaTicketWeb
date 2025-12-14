@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchMe, type Me } from "@/api/auth";
+import { fetchMyBookings } from "@/api/booking";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 
 const Stat = ({ label, value }: { label: string; value: number }) => (
@@ -11,13 +12,21 @@ const Stat = ({ label, value }: { label: string; value: number }) => (
 
 export default function UserInfo() {
   const [user, setUser] = useState<Me | null>(null);
+  const [bookingCount, setBookingCount] = useState(0);
 
   useEffect(() => {
-    const getUser = async () => {
-      const userData = await fetchMe();
-      setUser(userData);
+    const getData = async () => {
+      try {
+        const userData = await fetchMe();
+        setUser(userData);
+        
+        const bookingsData = await fetchMyBookings();
+        setBookingCount(bookingsData.length);
+      } catch (error) {
+        console.error("Failed to fetch user data or bookings", error);
+      }
     };
-    getUser();
+    getData();
   }, []);
 
   return (
@@ -51,7 +60,7 @@ export default function UserInfo() {
 
         {/* 통계 */}
         <div className="flex divide-x divide-gray-200">
-          <Stat label="예매내역" value={0} />
+          <Stat label="예매내역" value={bookingCount} />
           <Stat label="할인쿠폰" value={0} />
           <Stat label="공연예매권" value={0} />
         </div>

@@ -1,7 +1,7 @@
 // src/pages/PerformanceList.tsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchPerformances, type KopisListItem } from "../api/kopis";
+import { fetchPerformances, type KopisListItem, formatDate } from "../api/kopis";
 import "../css/performance-list.css";
 
 export default function PerformanceList() {
@@ -13,8 +13,16 @@ export default function PerformanceList() {
     (async () => {
       setLoading(true);
       try {
-        // ✅ 기본 인자 제공했지만 명시적으로 날짜 전달해도 OK
-        const list = await fetchPerformances("20230101", "20230630");
+        const today = new Date();
+        const threeMonthsAgo = new Date();
+        threeMonthsAgo.setMonth(today.getMonth() - 3);
+        const oneYearLater = new Date();
+        oneYearLater.setFullYear(today.getFullYear() + 1);
+
+        const stdate = formatDate(threeMonthsAgo);
+        const eddate = formatDate(oneYearLater);
+
+        const list = await fetchPerformances(stdate, eddate);
         if (alive) setItems(list);
       } finally {
         if (alive) setLoading(false);

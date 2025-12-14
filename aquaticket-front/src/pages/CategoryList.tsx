@@ -1,24 +1,54 @@
 // src/pages/CategoryList.tsx
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { fetchPerformances, type KopisListItem } from "../api/kopis";
+import { fetchPerformances, type KopisListItem, formatDate } from "../api/kopis";
 import "../css/performance-list.css";
 
+// genreFilterMap: For filtering API data
+const genreFilterMap: { [key: string]: string } = {
+  concert: "대중음악", // KOPIS API uses "대중음악" for concerts
+  musical: "뮤지컬",
+  classic: "클래식",
+};
+
+// genreTitleMap: For display in the UI
+const genreTitleMap: { [key: string]: string } = {
+  all: "전체",
+  concert: "콘서트",
+  musical: "뮤지컬/연극",
+  classic: "클래식/오페라",
+};
+
 export default function CategoryList() {
-  const { genre } = useParams<{ genre: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const [items, setItems] = useState<KopisListItem[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const genre = slug || "all";
+  const filterTerm = genreFilterMap[genre];
+  const pageTitle = genreTitleMap[genre] || "전체";
 
   useEffect(() => {
     let alive = true;
     (async () => {
       setLoading(true);
       try {
-        // 장르 필터가 필요하면 프론트에서 필터
-        const list = await fetchPerformances("20230101", "20230630");
-        const filtered = genre
-          ? list.filter((x) => (x.genrenm || "").includes(genre))
-          : list;
+        const today = new Date();
+        const threeMonthsAgo = new Date();
+        threeMonthsAgo.setMonth(today.getMonth() - 3);
+        const oneYearLater = new Date();
+        oneYearLater.setFullYear(today.getFullYear() + 1);
+
+        const stdate = formatDate(threeMonthsAgo);
+        const eddate = formatDate(oneYearLater);
+        
+        const list = await fetchPerformances(stdate, eddate);
+        
+        const filtered =
+          genre === "all"
+            ? list
+            : list.filter((x) => (x.genrenm || "").includes(filterTerm));
+            
         if (alive) setItems(filtered);
       } finally {
         if (alive) setLoading(false);
@@ -27,13 +57,13 @@ export default function CategoryList() {
     return () => {
       alive = false;
     };
-  }, [genre]);
+  }, [genre, filterTerm]);
 
   if (loading) return <div className="page">Loading...</div>;
 
   return (
-    <main className="page"> {/* ✅ [수정] <main> 태그 추가 */}
-      <h1>{genre ?? "카테고리"} 공연</h1>
+    <main className="page">
+      <h1>{pageTitle} 공연</h1>
       <div className="grid">
         {items.map((it) => (
           <Link key={it.mt20id} to={`/performances/${it.mt20id}`} className="card">

@@ -4,6 +4,16 @@ import type { KopisListItem, KopisDetailRaw, KopisPriceItem } from "./kopis.type
 
 export type { KopisListItem, KopisDetailRaw, KopisPriceItem } from "./kopis.types";
 
+/**
+ * 주어진 Date 객체를 'YYYYMMDD' 형식의 문자열로 포맷합니다.
+ */
+export function formatDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}${month}${day}`;
+}
+
 /* =========================
    공연 목록
    ========================= */
@@ -12,7 +22,7 @@ export async function fetchPerformances(
   stdate: string,
   eddate: string,
   cpage = "1",
-  rows = "12"
+  rows = "50"
 ): Promise<KopisListItem[]> {
   const { data } = await http.get<KopisListItem[]>("/kopis/pblprfr", {
     params: { stdate, eddate, cpage, rows },
