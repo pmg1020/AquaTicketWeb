@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import toast from "react-hot-toast";
-
+import "@/css/performance-detail-tabs.css";
 
 import {
   fetchPerformanceDetail,
@@ -14,18 +14,17 @@ import {
 } from "@/api/kopis";
 import KakaoMap from "@/components/maps/KakaoMap";
 
-import useBookingStore from "@/stores/useBookingStore"; // ✅ Store import
+import useBookingStore from "@/stores/useBookingStore";
 
 import "@/css/performance-detail.css";
 
-
 type CalValue = Date | null;
+type TabKey = "detail" | "venue" | "booking";
 
 export default function PerformanceDetail() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  // ✅ Zustand store state
   const { setPriceInfo, setPerformanceInfo } = useBookingStore();
 
   const [detail, setDetail] = useState<KopisDetailRaw | null>(null);
@@ -33,6 +32,9 @@ export default function PerformanceDetail() {
   const [selectedDate, setSelectedDate] = useState<CalValue>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // ✅ 탭 상태 추가
+  const [activeTab, setActiveTab] = useState<TabKey>("detail");
 
   useEffect(() => {
     let alive = true;
@@ -47,7 +49,6 @@ export default function PerformanceDetail() {
         if (!alive) return;
         setDetail(d);
         setPrices(p);
-        // ✅ 스토어에 공연 정보와 가격 정보 저장
         setPerformanceInfo({
           title: d.prfnm,
           date: d.prfpdfrom,
@@ -65,13 +66,8 @@ export default function PerformanceDetail() {
     };
   }, [id, setPerformanceInfo, setPriceInfo]);
 
-
-
-  // ⏱️ 회차(시간) 목록: KOPIS의 dtguidance(예: "화~금 19시 / 토 14시, 19시 ...")를 파싱하기 전
-  //   데모용으로 간단히 두 개 시간 슬롯을 노출. 실제로는 날짜에 따라 스케줄 생성/표시.
   const timeSlots: string[] = useMemo(() => {
     if (!selectedDate) return [];
-    // 예시: 14:00, 19:00 고정
     return ["14:00", "19:00"];
   }, [selectedDate]);
 
@@ -98,7 +94,6 @@ export default function PerformanceDetail() {
     return { minDate: effectiveMinDate, maxDate: toDate };
   }, [detail]);
 
-  // ✅ 가격 표시 및 전달을 위한 데이터 가공
   const displayPrices = useMemo(() => {
     if (!prices || prices.length === 0) return [];
 
@@ -142,15 +137,12 @@ export default function PerformanceDetail() {
   const title = detail.prfnm ?? "-";
   const subline = `${detail.prfpdfrom ?? "-"} ~ ${detail.prfpdto ?? "-"}`;
 
-
-
   const onClickBook = async () => {
     if (!id || !selectedDate || !selectedTime) {
       toast.error("공연 정보가 올바르지 않습니다. 날짜와 회차를 먼저 선택해주세요.");
       return;
     }
 
-    // 로그인 체크
     const token = localStorage.getItem("accessToken");
     if (!token) {
       toast.error("로그인이 필요합니다.");
@@ -159,7 +151,6 @@ export default function PerformanceDetail() {
       return;
     }
 
-    // ✅ 예매 페이지로 넘어가기 전에 "단순화된" 가격 정보와 공연 정보를 localStorage에 저장
     try {
       localStorage.setItem("temp_price_info", JSON.stringify(displayPrices));
       const perfInfo = {
@@ -225,21 +216,12 @@ export default function PerformanceDetail() {
             </button>
             <button className="melon-share-btn">공유</button>
           </div>
-
-          {/* 지도 표시 섹션 */}
-          {detail.fcltynm && (
-            <div className="melon-location-section">
-              <h2 className="melon-section-title">공연 장소</h2>
-              <KakaoMap venueName={detail.fcltynm} venueArea={detail.area} />
-            </div>
-          )}
         </div>
       </section>
 
-      {/* 날짜/회차 선택 섹션 (박스 안 3단 구조로 변경) */}
+      {/* 날짜/회차 선택 섹션 */}
       <section className="selection-box">
         <div className="triple-layout">
-          {/* Col 1: Calendar */}
           <div className="triple-col calendar-pane">
             <h2 className="sectionTitle">날짜 선택</h2>
             <div className="calendar-wrapper">
@@ -247,7 +229,7 @@ export default function PerformanceDetail() {
                 onChange={(val) => {
                   const v = Array.isArray(val) ? (val[0] as Date) : (val as Date);
                   setSelectedDate(v);
-                  setSelectedTime(null); // 날짜 바뀌면 시간 초기화
+                  setSelectedTime(null);
                 }}
                 value={selectedDate as unknown as Date}
                 minDate={minDate}
@@ -256,7 +238,6 @@ export default function PerformanceDetail() {
             </div>
           </div>
 
-          {/* Col 2: Time Slots */}
           <div className="triple-col time-pane">
             <h2 className="sectionTitle">회차 선택</h2>
             <p className="selected-date-msg">
@@ -276,7 +257,6 @@ export default function PerformanceDetail() {
             </div>
           </div>
 
-          {/* Col 3: Price & Booking */}
           <div className="triple-col price-pane">
             <h2 className="sectionTitle">좌석 및 가격</h2>
             {displayPrices.length > 0 && (
@@ -307,23 +287,97 @@ export default function PerformanceDetail() {
         </div>
       </section>
 
-      {/* 소개 이미지 */}
-      <section className="intro">
-        <h2 className="introTitle">소개 이미지</h2>
-        <div className="introGrid">
-          {Array.isArray(detail.styurls) && detail.styurls.length > 0 && (
-            <>
-              {detail.styurls.map((url, i) => (
-                <img key={i} className="introImg" src={url} alt={`소개 ${i + 1}`} />
-              ))}
-            </>
+      {/* ✅ 탭 네비게이션 */}
+      <section className="detail-tabs-section">
+        <div className="detail-tabs">
+          <button
+            className={`detail-tab ${activeTab === "detail" ? "active" : ""}`}
+            onClick={() => setActiveTab("detail")}
+          >
+            상세정보
+          </button>
+          <button
+            className={`detail-tab ${activeTab === "venue" ? "active" : ""}`}
+            onClick={() => setActiveTab("venue")}
+          >
+            공연장정보
+          </button>
+          <button
+            className={`detail-tab ${activeTab === "booking" ? "active" : ""}`}
+            onClick={() => setActiveTab("booking")}
+          >
+            예매안내
+          </button>
+        </div>
+
+        {/* ✅ 탭 컨텐츠 */}
+        <div className="detail-tab-content">
+          {/* 상세정보 탭 */}
+          {activeTab === "detail" && (
+            <div className="tab-pane">
+              <h2 className="content-title">소개 이미지</h2>
+              <div className="introGrid">
+                {Array.isArray(detail.styurls) && detail.styurls.length > 0 ? (
+                  detail.styurls.map((url, i) => (
+                    <img key={i} className="introImg" src={url} alt={`소개 ${i + 1}`} />
+                  ))
+                ) : (
+                  <p className="no-content">소개 이미지가 없습니다.</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 공연장정보 탭 */}
+          {activeTab === "venue" && (
+            <div className="tab-pane">
+              <div className="venue-info-box">
+                <h2 className="venue-title">{detail.fcltynm}</h2>
+                {detail.area && (
+                  <p className="venue-address">{detail.area}</p>
+                )}
+              </div>
+
+              <div className="venue-map-wrapper">
+                <h3 className="map-title">공연장 위치</h3>
+                <KakaoMap venueName={detail.fcltynm} venueArea={detail.area} />
+              </div>
+            </div>
+          )}
+
+          {/* 예매안내 탭 */}
+          {activeTab === "booking" && (
+            <div className="tab-pane">
+              <h2 className="content-title">예매 안내</h2>
+              <div className="booking-guide">
+                <div className="guide-section">
+                  <h3>예매 방법</h3>
+                  <ul>
+                    <li>날짜와 회차를 선택한 후 예매하기 버튼을 클릭하세요.</li>
+                    <li>좌석 선택 후 결제를 진행하시면 예매가 완료됩니다.</li>
+                  </ul>
+                </div>
+
+                <div className="guide-section">
+                  <h3>취소/환불 안내</h3>
+                  <ul>
+                    <li>공연 시작 전까지 전액 환불 가능합니다.</li>
+                    <li>부분 취소는 불가능하며, 전체 취소만 가능합니다.</li>
+                  </ul>
+                </div>
+
+                <div className="guide-section">
+                  <h3>유의사항</h3>
+                  <ul>
+                    <li>예매 시 입력한 정보를 확인해주세요.</li>
+                    <li>공연 당일 신분증을 지참해주세요.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </section>
-
-      <div style={{ height: "300px", margin: "40px 0" }}>
-        <p>이곳에 상세 정보(출연진, 공지사항, FAQ 등)가 추가되어 스크롤이 길어집니다.</p>
-      </div>
     </div>
   );
 }
