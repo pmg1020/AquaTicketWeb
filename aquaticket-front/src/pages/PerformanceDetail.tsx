@@ -12,6 +12,7 @@ import {
   type KopisDetailRaw,
   type KopisPriceItem,
 } from "@/api/kopis";
+import KakaoMap from "@/components/maps/KakaoMap";
 
 import useBookingStore from "@/stores/useBookingStore"; // ✅ Store import
 
@@ -224,6 +225,14 @@ export default function PerformanceDetail() {
             </button>
             <button className="melon-share-btn">공유</button>
           </div>
+
+          {/* 지도 표시 섹션 */}
+          {detail.fcltynm && (
+            <div className="melon-location-section">
+              <h2 className="melon-section-title">공연 장소</h2>
+              <KakaoMap venueName={detail.fcltynm} venueArea={detail.area} />
+            </div>
+          )}
         </div>
       </section>
 

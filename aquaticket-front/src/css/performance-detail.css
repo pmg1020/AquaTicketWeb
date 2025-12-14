@@ -20,12 +20,26 @@
 }
 .melon-poster-area { width: var(--poster-w); height: 330px; flex-shrink: 0; }
 .melon-poster-area img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block; }
-.melon-info-area { flex: 1; }
+.melon-info-area { flex: 1; display: flex; flex-direction: column; }
 .melon-title { font-size: 28px; font-weight: 800; margin: 0 0 12px; border-bottom: 1px solid #f2f2f2; padding-bottom: 14px; }
 .melon-infoList { list-style: none; padding: 0; margin: 0; }
 .melon-infoList li { display: flex; padding: 6px 0; border-bottom: 1px solid #fafafa; }
 .melon-label { width: 110px; font-weight: 700; color: #777; }
 .melon-value { color: #111; }
+.melon-actions { margin-top: auto; display: flex; gap: 8px; }
+
+/* Location Map Section */
+.melon-location-section {
+  margin-top: 20px;
+  border-top: 1px solid #f2f2f2;
+  padding-top: 20px;
+}
+.melon-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
 
 /* New Single Box Layout for Date/Time Selection */
 .selection-box {
