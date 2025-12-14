@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import axios from "axios";
 import useBookingStore, { type Coupon } from "@/stores/useBookingStore";
 import { fetchMe, type Me } from "@/api/auth";
 import { confirmBooking } from "@/api/booking";
@@ -157,8 +158,14 @@ const BookPaymentPage: React.FC = () => {
       clearBooking();
       navigate("/mypage");
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "결제 처리 중 오류가 발생했습니다.";
-      toast.error(msg);
+      if (axios.isAxiosError(err) && err.response?.status === 404) {
+        toast.error("선택하신 좌석 정보를 찾을 수 없거나 이미 판매된 좌석입니다. 다시 시도해 주세요.");
+        clearBooking();
+        navigate("/");
+      } else {
+        const msg = err instanceof Error ? err.message : "결제 처리 중 오류가 발생했습니다.";
+        toast.error(msg);
+      }
     } finally {
       setLoading(false);
     }

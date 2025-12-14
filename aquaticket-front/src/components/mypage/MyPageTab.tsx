@@ -1,43 +1,42 @@
-import { useState } from 'react';
+type TabKey = "home" | "booking" | "coupons" | "tickets";
 
-const MyPageTab = () => {
-  const [activeTab, setActiveTab] = useState('booking');
+const TABS: { key: TabKey; label: string }[] = [
+  { key: "home", label: "마이티켓 홈" },
+  { key: "booking", label: "예매확인/취소" },
+  { key: "coupons", label: "할인쿠폰" },
+  { key: "tickets", label: "공연예매권" },
+];
 
+const MyPageTab = ({
+  active,
+  onChange,
+}: {
+  active: TabKey;
+  onChange: (key: TabKey) => void;
+}) => {
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md">
-      <div className="flex space-x-4 border-b">
-        <button
-          onClick={() => setActiveTab('booking')}
-          className={`py-2 px-4 text-sm font-medium ${
-            activeTab === 'booking'
-              ? 'text-blue-600 border-b-2 border-blue-600'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}>
-          예매확인/취소
-        </button>
-        <button
-          onClick={() => setActiveTab('coupons')}
-          className={`py-2 px-4 text-sm font-medium ${
-            activeTab === 'coupons'
-              ? 'text-blue-600 border-b-2 border-blue-600'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}>
-          할인쿠폰
-        </button>
-        <button
-          onClick={() => setActiveTab('tickets')}
-          className={`py-2 px-4 text-sm font-medium ${
-            activeTab === 'tickets'
-              ? 'text-blue-600 border-b-2 border-blue-600'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}>
-          공연예매권
-        </button>
-      </div>
-      <div className="p-4">
-        {activeTab === 'booking' && <div>예매확인/취소 내역이 없습니다.</div>}
-        {activeTab === 'coupons' && <div>사용가능한 할인쿠폰이 없습니다.</div>}
-        {activeTab === 'tickets' && <div>사용가능한 공연예매권이 없습니다.</div>}
+    <div className="bg-white border-b border-gray-200">
+      <div className="flex gap-2">
+        {TABS.map((t) => {
+          const isActive = active === t.key;
+          return (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => onChange(t.key)}
+              className={`relative px-5 py-4 text-[16px] font-semibold transition ${
+                isActive
+                  ? "text-emerald-600"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              {t.label}
+              {isActive && (
+                <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-emerald-600" />
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

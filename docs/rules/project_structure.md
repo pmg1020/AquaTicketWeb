@@ -84,7 +84,7 @@ HTTP 요청을 직접 받아 처리하는 클래스들입니다.
 
 -   **`AuthController.java`**: `/api/auth` 경로의 요청을 처리합니다. 이메일/비밀번호를 사용한 자체 회원가입(`register`) 및 로그인(`login`), 그리고 토큰 기반의 사용자 정보 조회(`me`) API를 제공합니다.
 -   **`KopisProxyController.java`**: `/api/kopis` 경로의 요청을 처리합니다. 프론트엔드 대신 KOPIS API 서버와 통신하여 공연 목록, 상세 정보, 가격 등을 받아와 프론트엔드에 JSON 형식으로 전달하는 프록시 역할을 합니다.
--   **`booking/BookingController.java`**: `/api/booking` 경로의 예매 관련 요청을 처리합니다. 좌석 현황 조회, 예매 생성, 내 예매 내역 조회 등의 API를 제공합니다.
+-   **`booking/BookingController.java`**: `/api/booking` 경로의 예매 관련 요청을 처리합니다. 좌석 현황 조회(`getSeatAvailability`), 예매 생성(`confirmBooking`), 내 예매 내역 조회(`getMyBookings`) 등의 API를 제공합니다. `confirmBooking` 엔드포인트는 이제 실제 예매 데이터를 받아 데이터베이스에 저장합니다.
 
 #### `domain` 및 `repository` - 데이터베이스 모델링 및 접근
 
@@ -96,5 +96,5 @@ HTTP 요청을 직접 받아 처리하는 클래스들입니다.
 #### `service` - 비즈니스 로직
 
 -   **`MemberService.java`**: 회원 정보 조회, 수정, 비밀번호 변경 등 회원 관련 비즈니스 로직을 처리합니다.
--   **`booking/BookingService.java`**: 예매 기능의 핵심 비즈니스 로직을 담당합니다. 특정 공연 회차의 좌석 가용성(예매 가능/완료/잠금 상태)을 계산하고, `ensureShowtime`을 통해 필요한 공연/회차 정보를 동적으로 생성하며, 사용자의 예매 내역을 조회하는 등의 복잡한 로직을 수행합니다.
+-   **`booking/BookingService.java`**: 예매 기능의 핵심 비즈니스 로직을 담당합니다. 특정 공연 회차의 좌석 가용성(예매 가능/완료/잠금 상태)을 계산하고, `ensureShowtime`을 통해 필요한 공연/회차 정보를 동적으로 생성하며, 사용자의 예매 내역을 조회하는 등의 복잡한 로직을 수행합니다. 또한, `confirmBooking` 메서드를 통해 실제 예매를 생성하고, 좌석을 예약 처리하며, 총 가격을 계산하여 데이터베이스에 저장하는 역할을 담당합니다.
 -   **`booking/ShowCreationServiceImpl.java`**: KOPIS API에서 가져온 정보를 바탕으로 데이터베이스에 새로운 공연(`Performance`), 장소(`Venue`), 회차(`Showtime`) 데이터를 생성하는 역할을 합니다.

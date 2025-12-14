@@ -34,68 +34,83 @@ const SeatMap: React.FC<SeatMapProps> = ({
   const seatsByRow = useMemo(() => {
     const grouped: Record<string, SeatAvailability[]> = {};
     zoneAvailability.forEach((seat) => {
-      if (!grouped[seat.row]) {
-        grouped[seat.row] = [];
-      }
+      if (!grouped[seat.row]) grouped[seat.row] = [];
       grouped[seat.row].push(seat);
     });
-    return Object.entries(grouped).sort(([rowA], [rowB]) =>
-      rowA.localeCompare(rowB)
-    );
+    return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b));
   }, [zoneAvailability]);
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
-      <div className="flex items-center gap-4 mb-2">
+    <div className="flex flex-col items-center w-full">
+      {/* 상단 */}
+      <div className="flex items-center gap-4 mb-4">
         <button
           onClick={onBack}
-          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition"
+          className="px-4 py-1.5 rounded bg-gray-200 hover:bg-gray-300 transition text-sm"
         >
           ← 구역으로
         </button>
-        <span className="text-gray-600 text-sm font-medium">
-          현재 구역: <strong>{zoneId}</strong>
+        <span className="text-gray-600 text-sm">
+          현재 구역: <b>{zoneId}</b>
         </span>
       </div>
 
-      <div className="stage-area">무대방향 (STAGE)</div>
+      {/* 무대 */}
+      <div className="mb-6 text-gray-500 text-sm font-semibold">
+        무대방향 (STAGE)
+      </div>
 
-      <div className="seat-map-container">
-        {seatsByRow.map(([row, seats]) => (
-          <div key={row} className="flex items-center gap-2 mb-1">
-            <div className="w-6 text-center text-sm font-bold text-gray-500">{row}</div>
-            <div className="flex gap-1">
-              {seats.map((seat) => {
-                const isSelected = selectedSeats.includes(String(seat.seatId));
-                let color = "#ccc"; // TAKEN
-                if (seat.status === "AVAILABLE") color = "#a0aec0"; // Gray
-                if (isSelected) color = "#2563eb"; // Blue
+      {/* ✅ 좌석 전체 스케일 */}
+      <div className="origin-top scale-[1.35] md:scale-[1.45] lg:scale-[1.6]">
+        <div className="flex flex-col gap-2">
+          {seatsByRow.map(([row, seats]) => (
+            <div key={row} className="flex items-center gap-3">
+              {/* Row 라벨 */}
+              <div className="w-8 text-right text-sm font-bold text-gray-500">
+                {row}
+              </div>
 
-                return (
-                  <div
-                    key={seat.seatId}
-                    onClick={() => handleSeatClick(seat)}
-                    className="transition-transform hover:scale-110"
-                    style={{
-                      width: 20,
-                      height: 20,
-                      borderRadius: 3,
-                      background: color,
-                      cursor: seat.status === "AVAILABLE" ? "pointer" : "not-allowed",
-                      color: "white",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "10px",
-                    }}
-                  >
-                    {seat.number}
-                  </div>
-                );
-              })}
+              {/* 좌석 */}
+              <div className="flex gap-2">
+                {seats.map((seat) => {
+                  const isSelected = selectedSeats.includes(
+                    String(seat.seatId)
+                  );
+
+                  let bg = "#cbd5e1"; // 기본
+                  if (seat.status !== "AVAILABLE") bg = "#9ca3af";
+                  if (isSelected) bg = "#2563eb";
+
+                  return (
+                    <div
+                      key={seat.seatId}
+                      onClick={() => handleSeatClick(seat)}
+                      className="transition-transform hover:scale-110"
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 6,
+                        background: bg,
+                        cursor:
+                          seat.status === "AVAILABLE"
+                            ? "pointer"
+                            : "not-allowed",
+                        color: "white",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {seat.number}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

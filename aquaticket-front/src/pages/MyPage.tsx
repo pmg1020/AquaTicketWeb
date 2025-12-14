@@ -1,12 +1,11 @@
+import MyPageContent from "@/components/mypage/MyPageContent";
 
-import MyPageContent from '../components/mypage/MyPageContent';
-
-const MyPage = () => {
+export default function MyPage() {
   return (
-    <div className="bg-gray-100 min-h-screen p-8">
-      <MyPageContent />
+    <div className="w-full min-h-screen bg-gray-50">
+      <div className="w-full px-8 py-6">
+        <MyPageContent />
+      </div>
     </div>
   );
-};
-
-export default MyPage;
+}

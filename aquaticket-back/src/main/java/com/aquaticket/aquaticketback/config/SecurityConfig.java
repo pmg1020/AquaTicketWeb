@@ -47,15 +47,14 @@ public class SecurityConfig {
                 )
 
                 .oauth2Login(o -> o.successHandler(oAuth2SuccessHandler))
-
-                .exceptionHandling(ex -> ex.authenticationEntryPoint((req, res, e) -> {
-                    res.setStatus(401);
-                    res.setContentType("application/json;charset=UTF-8");
-                    Object jwtError = req.getAttribute("jwtError");
-                    String errorMessage = (jwtError != null) ? jwtError.toString().replace("\"", "'") : "Unauthorized";
-                    res.getWriter().write("{\"error\":\"" + errorMessage + "\"}");
-                }))
-
+                // Remove the custom authenticationEntryPoint to allow GlobalExceptionHandler to take over
+                // .exceptionHandling(ex -> ex.authenticationEntryPoint((req, res, e) -> {
+                //     res.setStatus(401);
+                //     res.setContentType("application/json;charset=UTF-8");
+                //     Object jwtError = req.getAttribute("jwtError");
+                //     String errorMessage = (jwtError != null) ? jwtError.toString().replace("\"", "'") : "Unauthorized";
+                //     res.getWriter().write("{\"error\":\"" + errorMessage + "\"}");
+                // }))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
