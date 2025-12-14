@@ -5,6 +5,7 @@ import com.aquaticket.aquaticketback.booking.dto.BookingHistoryDto;
 import com.aquaticket.aquaticketback.booking.dto.ConfirmRequestDto;
 import com.aquaticket.aquaticketback.booking.dto.SeatAvailabilityDto;
 import com.aquaticket.aquaticketback.booking.dto.SeatStatus;
+import com.aquaticket.aquaticketback.booking.exception.BookingNotFoundException;
 import com.aquaticket.aquaticketback.booking.exception.InvalidShowDataException;
 import com.aquaticket.aquaticketback.booking.exception.SeatAlreadyBookedException;
 import com.aquaticket.aquaticketback.booking.exception.SeatNotFoundException;
@@ -15,6 +16,7 @@ import com.aquaticket.aquaticketback.exception.UserNotFoundException;
 import com.aquaticket.aquaticketback.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,6 +116,29 @@ public class BookingService {
             throw e; // Re-throw the exception to let the controller advice handle it
         }
     }
+
+    @Transactional
+    public void cancelBooking(Long bookingId) {
+        log.info("Attempting to cancel booking with ID: {}", bookingId);
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+
+        Reservation reservation = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new BookingNotFoundException("Booking not found with ID: " + bookingId));
+
+        if (!reservation.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("User is not authorized to cancel this booking.");
+        }
+
+        reservation.setStatus("CANCELLED");
+        bookingRepository.save(reservation);
+
+        List<ReservationSeat> reservationSeats = reservationSeatRepository.findByReservation(reservation);
+        reservationSeatRepository.deleteAll(reservationSeats);
+        log.info("Booking with ID: {} cancelled and associated seats released.", bookingId);
+    }
+
     @Transactional(readOnly = true)
     public List<BookingHistoryDto> getMyBookings() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

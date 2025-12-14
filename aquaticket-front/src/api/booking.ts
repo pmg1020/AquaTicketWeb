@@ -78,3 +78,7 @@ export async function fetchMyBookings(): Promise<Booking[]> {
   const res = await api.get<Booking[]>("/api/booking/me");
   return res.data;
 }
+
+export async function cancelBooking(bookingId: number): Promise<void> {
+  await api.post(`/api/booking/${bookingId}/cancel`);
+}

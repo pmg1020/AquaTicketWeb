@@ -41,4 +41,10 @@ public class BookingController {
         Long bookingId = bookingService.confirmBooking(request);
         return ResponseEntity.ok(new com.aquaticket.aquaticketback.booking.dto.ConfirmResponse(bookingId, "Booking confirmed successfully."));
     }
+
+    @PostMapping("/{bookingId}/cancel")
+    public ResponseEntity<Void> cancelBooking(@PathVariable Long bookingId) {
+        bookingService.cancelBooking(bookingId);
+        return ResponseEntity.ok().build();
+    }
 }

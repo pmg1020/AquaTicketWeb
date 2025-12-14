@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { fetchMyBookings, type Booking } from "@/api/booking";
+import { fetchMyBookings, cancelBooking, type Booking } from "@/api/booking";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 function StatusBadge({ status }: { status: string }) {
   const s = (status || "").toUpperCase();
@@ -7,7 +9,7 @@ function StatusBadge({ status }: { status: string }) {
 
   if (s.includes("CONFIRM") || s.includes("PAID") || s.includes("COMPLETE")) {
     cls = "bg-emerald-100 text-emerald-700";
-  } else if (s.includes("CANCEL") || s.includes("REFUND") || s.includes("FAIL")) {
+  } else if (s.includes("CANCEL")) {
     cls = "bg-red-100 text-red-700";
   }
 
@@ -38,6 +40,27 @@ const BookingList = () => {
     };
     loadBookings();
   }, []);
+
+  const handleCancel = async (bookingId: number) => {
+    if (!window.confirm("정말로 예매를 취소하시겠습니까?")) {
+      return;
+    }
+
+    try {
+      await cancelBooking(bookingId);
+      toast.success("예매가 취소되었습니다.");
+      // Update the status of the booking in the local state
+      setBookings(bookings.map(b => 
+        b.bookingId === bookingId ? { ...b, status: "CANCELLED" } : b
+      ));
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || "취소 중 오류가 발생했습니다.");
+      } else {
+        toast.error("취소 중 오류가 발생했습니다.");
+      }
+    }
+  };
 
   return (
     <section className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -86,11 +109,12 @@ const BookingList = () => {
               const viewingDate = b.viewingDate
                 ? new Date(b.viewingDate).toLocaleDateString()
                 : "-";
+              const isCancelled = b.status === 'CANCELLED';
 
               return (
                 <div
                   key={b.bookingId}
-                  className="border border-gray-200 rounded-lg p-3 hover:border-emerald-500 hover:shadow-md transition-all duration-200"
+                  className={`border border-gray-200 rounded-lg p-3 hover:border-emerald-500 hover:shadow-md transition-all duration-200 ${isCancelled ? 'bg-gray-50 opacity-70' : ''}`}
                 >
                   <div className="flex gap-3">
                     {/* 포스터 */}
@@ -133,12 +157,22 @@ const BookingList = () => {
                       </div>
 
                       {/* 버튼 */}
-                      <button
-                        type="button"
-                        className="w-full rounded border border-gray-300 bg-white px-3 py-1.5 text-[12px] font-medium text-gray-700 hover:bg-gray-50 transition"
-                      >
-                        예매 상세
-                      </button>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          className="w-full rounded border border-gray-300 bg-white px-3 py-1.5 text-[12px] font-medium text-gray-700 hover:bg-gray-50 transition"
+                        >
+                          예매 상세
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleCancel(b.bookingId)}
+                          disabled={isCancelled}
+                          className="w-full rounded border border-gray-300 bg-white px-3 py-1.5 text-[12px] font-medium text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition"
+                        >
+                          {isCancelled ? '취소 완료' : '예매 취소'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
