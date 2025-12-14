@@ -30,10 +30,11 @@ const SeatSelection: React.FC = () => {
     setPriceInfo,
     performanceInfo,
     setPerformanceInfo,
+    isCaptchaVerified,
   } = useBookingStore();
 
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
-  const [showCaptcha, setShowCaptcha] = useState(true);
+  const [isCaptchaModalOpen, setCaptchaModalOpen] = useState(true);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [availability, setAvailability] = useState<SeatAvailability[]>([]);
   const [loading, setLoading] = useState(true);
@@ -126,8 +127,6 @@ const SeatSelection: React.FC = () => {
 
     return () => clearInterval(interval);
   }, [searchParams, setShowtimeId, setPriceInfo, setPerformanceInfo, navigate]);
-
-  const handleCaptchaSuccess = () => setShowCaptcha(false);
 
   // 날짜 + 시간 포맷터
   const formatDateTime = (dateStr: string, timeStr: string) => {
@@ -413,10 +412,11 @@ const SeatSelection: React.FC = () => {
 
   // ---------- 메인 좌석도 (zone 미선택) ----------
   if (!selectedZone) {
+    const showCaptcha = !isCaptchaVerified && isCaptchaModalOpen;
     return (
       <div className="seat-selection-root">
         <div className="seat-selection-page relative overflow-hidden w-screen flex flex-col h-screen">
-          {showCaptcha && <CaptchaModal onSuccess={handleCaptchaSuccess} />}
+          {showCaptcha && <CaptchaModal onClose={() => setCaptchaModalOpen(false)} />}
           <div
             className={
               showCaptcha
@@ -630,10 +630,11 @@ const SeatSelection: React.FC = () => {
   }
 
   // ---------- 상세 좌석도 (zone 선택 후) ----------
+  const showCaptcha = !isCaptchaVerified && isCaptchaModalOpen;
   return (
     <div className="seat-selection-root">
       <div className="seat-selection-page relative overflow-hidden w-screen flex flex-col h-screen">
-        {showCaptcha && <CaptchaModal onSuccess={handleCaptchaSuccess} />}
+        {showCaptcha && <CaptchaModal onClose={() => setCaptchaModalOpen(false)} />}
         <div
           className={
             showCaptcha

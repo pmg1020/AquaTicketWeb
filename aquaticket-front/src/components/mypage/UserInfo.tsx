@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchMe, type Me } from "@/api/auth";
 import { fetchMyBookings } from "@/api/booking";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
+import { RightOutlined } from "@ant-design/icons";
 
 const Stat = ({ label, value }: { label: string; value: number }) => (
   <div className="flex-1 text-center py-6">
@@ -43,15 +44,17 @@ export default function UserInfo() {
               <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   type="button"
-                  className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition"
+                  className="flex items-center justify-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition"
                 >
                   기본정보 관리
+                  <RightOutlined className="ml-1 h-3 w-3" />
                 </button>
                 <button
                   type="button"
-                  className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition"
+                  className="flex items-center justify-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition"
                 >
                   배송지 관리
+                  <RightOutlined className="ml-1 h-3 w-3" />
                 </button>
               </div>
             </div>

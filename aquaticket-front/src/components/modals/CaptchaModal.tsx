@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import useBookingStore from "@/stores/useBookingStore";
 
 interface CaptchaModalProps {
-  onSuccess: () => void;
+  onClose: () => void;
 }
 
-export default function CaptchaModal({ onSuccess }: CaptchaModalProps) {
+export default function CaptchaModal({ onClose }: CaptchaModalProps) {
+  const { setCaptchaVerified } = useBookingStore();
   const [captchaText, setCaptchaText] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
   const [error, setError] = useState(false);
@@ -34,12 +36,13 @@ export default function CaptchaModal({ onSuccess }: CaptchaModalProps) {
     }
     setError(false);
     toast.success("인증에 성공했습니다.");
-    onSuccess();
+    setCaptchaVerified(true);
+    onClose();
   };
 
   const handleSkip = () => {
     toast("좌석 선택 후 다시 인증해주세요.", { icon: "🪪" });
-    onSuccess();
+    onClose();
   };
 
   return (

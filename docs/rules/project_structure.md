@@ -48,6 +48,7 @@ React, TypeScript, Vite 기반의 프론트엔드 애플리케이션으로, 사�
     -   `SeatMap.tsx`: 특정 '구역'이 선택되었을 때, 해당 구역의 상세 좌석들을 보여주는 컴포넌트입니다.
 -   **`modals/CaptchaModal.tsx`**: 예매 시작 전 표시되는 보안문자 입력 모달입니다.
 -   **`mypage/`**: 마이페이지를 구성하는 여러 섹션 컴포넌트들입니다. (`BookingList`, `UserInfo` 등)
+    -   `UserInfo.tsx`: 마이페이지에서 사용자 정보(이메일)와 예매 내역, 쿠폰 등 기본 통계를 보여주는 컴포넌트입니다. '기본정보 관리', '배송지 관리' 버튼에 `@ant-design/icons`의 아이콘을 추가하여 시각적 완성도를 높였습니다.
 
 ### 1.5. `src/routes` 와 `src/stores`
 

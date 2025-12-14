@@ -18,6 +18,15 @@ export function formatDate(date: Date): string {
    공연 목록
    ========================= */
 // 백엔드 → GET /api/kopis/pblprfr?stdate&eddate&cpage&rows
+
+interface PerformanceRequestParams {
+  stdate: string;
+  eddate: string;
+  cpage: string;
+  rows: string;
+  shprfnm?: string;
+}
+
 export async function fetchPerformances(
   stdate: string,
   eddate: string,
@@ -25,7 +34,7 @@ export async function fetchPerformances(
   rows = "50",
   shprfnm?: string
 ): Promise<KopisListItem[]> {
-  const params: any = { stdate, eddate, cpage, rows };
+  const params: PerformanceRequestParams = { stdate, eddate, cpage, rows };
   if (shprfnm) {
     params.shprfnm = shprfnm;
   }
